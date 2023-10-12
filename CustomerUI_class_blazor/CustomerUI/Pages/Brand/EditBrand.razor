@@ -1,0 +1,51 @@
+﻿@page "/edit-brand/{Id}"
+@using CustomerUI.Services;
+@using CustomerUI.Data;
+
+<h3>Edit Brand</h3>
+
+<!-- Brand editing form -->
+<form @onsubmit="UpdateBrand">
+    <div class="form-group">
+        <label for="brandName">Brand Name:</label>
+        <input type="text" class="form-control" id="brandName" @bind="editedBrand.BrandName">
+    </div>
+    <br/>
+    <button type="submit" class="btn btn-primary" >Update</button>
+</form>
+
+@code {
+
+    [Parameter]
+    public string id { get; set; }
+
+    private Brand editedBrand = new Brand();
+
+    [Inject]
+    private IBrandService BrandService { get; set; }
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (int.TryParse(id, out int Id))
+        {
+            editedBrand = await BrandService.GetBrandById(Id);
+
+        }
+    }
+
+    private async Task UpdateBrand()
+    {
+        try
+        {
+            await BrandService.UpdateBrand(editedBrand);
+            NavigationManager.NavigateTo("/brands");
+        }
+        catch (Exception ex)
+        {
+            // Handle any errors or show error messages to the user
+            Console.WriteLine($"Error updating Brand: {ex.Message}");
+        }
+    }
+}

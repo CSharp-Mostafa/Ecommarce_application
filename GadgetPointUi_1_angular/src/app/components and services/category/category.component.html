@@ -1,0 +1,73 @@
+<div class="container py-5">
+    <div class="row mb-4">
+      <div class="col-lg-6">
+        <div class="card">
+          <h5 class="card-header">Create New Category <span class="text-primary"><i class="bi bi-plus-circle"></i></span></h5>
+          <div class="input-group">
+            <input [(ngModel)]="newCategoryName" class="form-control me-2" placeholder="New Category Name">
+            <button class="btn btn-success" (click)="createCategory()">Create</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <!-- Explore Categories Card -->
+      <div class="col-lg-6">
+        <div class="card">
+          <h5 class="card-header">Explore Categories</h5>
+
+          <mat-form-field>
+            <mat-label>Filter</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
+          </mat-form-field>
+
+          <div class="card-body">
+            <mat-table [dataSource]="dataSource" matSort>
+  
+              <!-- Serial Number Column -->
+              <ng-container matColumnDef="serialNumber">
+                <mat-header-cell *matHeaderCellDef mat-sort-header><strong> Serial </strong></mat-header-cell>
+                <mat-cell *matCellDef="let category; let i = index">{{ calculateRomanNumeral(i) }}</mat-cell>
+              </ng-container>
+  
+              <!-- Category Name Column -->
+              <ng-container matColumnDef="categoryName">
+                <mat-header-cell *matHeaderCellDef mat-sort-header><strong> Category </strong></mat-header-cell>
+                <mat-cell *matCellDef="let category"> {{ category.categoryName }} </mat-cell>
+              </ng-container>
+  
+              <!-- Action Column -->
+              <ng-container matColumnDef="action">
+                <mat-header-cell *matHeaderCellDef><strong>Action</strong></mat-header-cell>
+                <mat-cell *matCellDef="let category">
+                  <button class="btn btn-primary btn-sm" (click)="onSelectForEdit(category)">Edit</button>
+                </mat-cell>
+              </ng-container>
+  
+              <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+            </mat-table>
+            <mat-paginator [pageSizeOptions]="[5, 10, 25]" [pageSize]="pageSize"></mat-paginator>
+          </div>
+        </div>
+      </div>
+  
+        <!-- Category Details Card -->
+    <div class="col-lg-6">
+        <div class="card">
+          <h5 class="card-header">Category Details And More Action</h5>
+          <div class="card-body">
+            <p *ngIf="selectedCategory" class="mb-3">You have selected: <strong>{{ selectedCategory.categoryName }}</strong></p>
+            <div *ngIf="selectedCategory">
+              <input [(ngModel)]="selectedCategory.categoryName" class="form-control mb-2" placeholder="Update Brand Name">
+              <button class="btn btn-primary" (click)="updateCategory()">Save Changes</button>
+              <button class="btn btn-secondary" (click)="cancelEdit()">Cancel</button>
+              <button class="btn btn-danger" (click)="deleteCategory(selectedCategory.categoryId)">Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      </div>
+    </div>
+  

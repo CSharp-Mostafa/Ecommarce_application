@@ -1,0 +1,228 @@
+﻿@page "/suppliers"
+@using CustomerUI.Services;
+@using CustomerUI.Data;
+
+<h3 style="color: #808080; font-weight: bold;">All Suppliers Information</h3>
+
+<div class="d-flex align-items-center justify-content-between filter-container">
+    <div class="d-flex">
+        <input type="text" @bind="filterText" placeholder="Filter by SupplierName" @oninput="OnFilterTextChanged">
+    </div>
+    <button @onclick="CreateSupplier" class="btn btn-primary"><i class="fas fa-plus"></i>  Add New Suppliers</button>
+</div>
+<p>Serch Name: @filterText</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Serial No.</th>
+            <th @onclick="SortBySupplierName">Supplier Name</th>
+            <th>Email</th>
+            <th>Contact No</th>
+            <th>Address</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (pagedSuppliers.Any())
+        {
+            @for (int i = 0; i < pagedSuppliers.Count(); i++)
+            {
+                var supplier = pagedSuppliers.ElementAt(i);
+                int serialNumber = (CurPage - 1) * pageSize + i + 1;
+
+                <tr>
+                    <td>@serialNumber</td>
+                    <td>@supplier.SupplierName</td>
+                    <td>@supplier.Email</td>
+                    <td>@supplier.ContactNo</td>
+                    <td>@supplier.Address</td>
+                    <td>
+                        <button @onclick="() => EditSupplier(supplier.SupplierId)" class="edit-button"><i class="fas fa-edit"></i> Edit</button>
+                        <button @onclick="() => DeleteSupplier(supplier.SupplierId)" class="delete-button"><i class="fas fa-trash"></i>  Delete</button>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="3">No Results Found</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <input type="button" class="btn btn-lg" id="prev" @onclick="PrevPage" value="Previous" />
+    @for (int i = 1; i <= totalPages; i++)
+    {
+        int j = i;
+        @if (i == CurPage)
+        {
+            <span class="px-2" style="font-weight:bold">@i</span>
+        }
+        else
+        {
+            <span class="px-2" cursor="pointer" @onclick="()=> ShowPage(j)">@i</span>
+        }
+    }
+    <input type="button" class="btn btn-lg" id="next" @onclick="NextPage" value="Next" />
+</div>
+
+@code {
+    private int serialOffset = 1;
+    private int serialNumber = 1; // Initialize to 1 or any other starting value
+
+    public string filterText = "";
+    private string sortBy = "SupplierId";
+    private bool sortAscending = true;
+
+    private Supplier? editSupplier;
+    private IEnumerable<Supplier> SuppliersList = new List<Supplier>();
+    private IEnumerable<Supplier> pagedSuppliers = new List<Supplier>(); // Track the paged items
+    private int totalPages;
+
+    [Inject]
+    private ISupplierService SupplierService { get; set; }
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    private int CurPage = 1;
+    private int pageSize = 5; // Adjust the page size as needed
+
+    protected override async Task OnInitializedAsync()
+    {
+        SuppliersList = await SupplierService.GetSuppliers();
+        await ShowPage();
+    }
+
+    protected async Task ShowPage()
+    {
+        // Apply filtering first
+        var filteredSuppliersList = GetFilteredAndSortedSuppliers();
+
+        // Calculate the index to start skipping from based on CurPage and pageSize
+        int startIndex = (CurPage - 1) * pageSize;
+
+        // Filter and paginate the SuppliersList
+        pagedSuppliers = filteredSuppliersList.Skip(startIndex).Take(pageSize).ToList();
+
+        // Calculate total pages based on the filtered list
+        totalPages = (int)Math.Ceiling(filteredSuppliersList.Count() / (double)pageSize);
+    }
+
+    protected async Task NextPage()
+    {
+        if (CurPage < totalPages)
+        {
+            CurPage++;
+            await ShowPage();
+        }
+    }
+
+    protected async Task PrevPage()
+    {
+        if (CurPage > 1)
+        {
+            CurPage--;
+            await ShowPage();
+        }
+    }
+
+    protected async Task ShowPage(int i)
+    {
+        CurPage = i;
+        await ShowPage();
+    }
+
+    private void CreateSupplier()
+    {
+        NavigationManager.NavigateTo("/create-supplier");
+    }
+
+    private async void EditSupplier(int supplierId)
+    {
+        NavigationManager.NavigateTo($"/edit-supplier/{supplierId}");
+
+        try
+        {
+            editSupplier = await SupplierService.GetSupplierById(supplierId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading Supplier: {ex.Message}");
+        }
+    }
+
+    private async Task DeleteSupplier(int supplierId)
+    {
+        try
+        {
+            await SupplierService.DeleteSupplier(supplierId);
+            SuppliersList = await SupplierService.GetSuppliers();
+            ShowPage();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting Supplier: {ex.Message}");
+        }
+    }
+
+    public IEnumerable<Supplier> GetFilteredAndSortedSuppliers()
+    {
+        var filteredSuppliersList = SuppliersList;
+
+        // Filter based on SupplierName
+        if (!string.IsNullOrEmpty(filterText))
+        {
+            var searchText = filterText.Trim().ToLower();
+            Console.WriteLine($"Applying filter: {searchText}"); // Add this line for debugging
+            filteredSuppliersList = filteredSuppliersList
+                .Where(supplier => supplier.SupplierName.ToLower().Contains(searchText));
+        }
+
+        // Sort based on the selected column
+        switch (sortBy)
+        {
+            case "SupplierName":
+                filteredSuppliersList = sortAscending
+                    ? filteredSuppliersList.OrderBy(supplier => supplier.SupplierName)
+                    : filteredSuppliersList.OrderByDescending(supplier => supplier.SupplierName);
+                break;
+            // Add more cases for other columns if needed
+
+            default:
+                filteredSuppliersList = sortAscending
+                    ? filteredSuppliersList.OrderBy(supplier => supplier.SupplierId)
+                    : filteredSuppliersList.OrderByDescending(supplier => supplier.SupplierId);
+                break;
+        }
+
+        return filteredSuppliersList;
+    }
+
+    //private void SortBySupplierId() => SetSortCriteria("SupplierId");
+    //private void SortBySupplierName() => SetSortCriteria("SupplierName");
+
+    private void SortBySupplierName()
+    {
+        SetSortCriteria("SupplierName");
+        ShowPage();
+    }
+
+    private void SetSortCriteria(string column)
+    {
+        if (sortBy == column)
+            sortAscending = !sortAscending;
+        else
+            sortAscending = true;
+
+        sortBy = column;
+    }
+
+    public void OnFilterTextChanged(ChangeEventArgs e)
+    {
+        filterText = e.Value.ToString();
+        ShowPage();
+    }
+}

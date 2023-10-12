@@ -1,0 +1,29 @@
+﻿@page "/create-category"
+@using CustomerUI.Services;
+@using CustomerUI.Data;
+
+<h3>Create Category</h3>
+
+<form @onsubmit="CreateCategoryAsync">
+    <div class="form-group">
+        <label for="categoryName">Category Name:</label>
+        <input type="text" class="form-control" id="categoryName" @bind="newCategory.CategoryName">
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Add New Category</button>
+</form>
+
+@code {
+    private Category newCategory = new Category();
+
+    [Inject]
+    private ICategoryService CategoryService { get; set; }
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    private async Task CreateCategoryAsync()
+    {
+        await CategoryService.CreateCategory(newCategory);
+        NavigationManager.NavigateTo("/categories");
+    }
+}

@@ -1,0 +1,79 @@
+<div class="container py-5">
+  <div class="row mb-4">
+    <div class="col-lg-6">
+      <div class="card">
+        <h5 class="card-header">Create New Brand <span class="text-primary"><i class="bi bi-plus-circle"></i></span></h5>
+        <div class="input-group">
+          <input [(ngModel)]="newBrandName" class="form-control me-2" placeholder="New Brand Name">
+          <button class="btn btn-success" (click)="createBrand()">Create</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  <div class="row">
+    <!-- Explore Brands Card -->
+    <div class="col-lg-6">
+      <div class="card">
+        <h5 class="card-header">Explore Brands</h5>
+
+        <mat-form-field>
+          <mat-label>Filter</mat-label>
+          <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
+        </mat-form-field>
+      
+        <div class="card-body">
+          <mat-table [dataSource]="dataSource" matSort>
+
+            <!-- Serial Number Column -->
+        <ng-container matColumnDef="serialNumber">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Serial Number </mat-header-cell>
+          <mat-cell *matCellDef="let brand; let i = index">{{ calculateRomanNumeral(i) }}</mat-cell>
+        </ng-container>
+
+
+            <!-- Brand Name Column -->
+            <ng-container matColumnDef="brandName">
+              <!-- <mat-header-cell *matHeaderCellDef mat-sort-header> Brand Name </mat-header-cell> -->
+              <mat-header-cell *matHeaderCellDef mat-sort-header><strong>Brand Name</strong></mat-header-cell>
+              <mat-cell *matCellDef="let brand"> {{ brand.brandName }} </mat-cell>
+            </ng-container>
+
+            <!-- Action Column -->
+            <ng-container matColumnDef="action">
+              <!-- <mat-header-cell *matHeaderCellDef> Action </mat-header-cell> -->
+              <mat-header-cell *matHeaderCellDef><strong>Action</strong></mat-header-cell>
+              <mat-cell *matCellDef="let brand">
+                <button class="btn btn-primary btn-sm" (click)="onSelectForEdit(brand)">Edit</button>
+                <!-- <button class="btn btn-danger btn-sm" (click)="deleteBrand(brand.brandId)">Delete</button> -->
+              </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+          </mat-table>
+          <mat-paginator [pageSizeOptions]="[5, 10, 25]" [pageSize]="pageSize"></mat-paginator>
+        </div>
+      </div>
+    </div>
+
+    <!-- Brand Details Card -->
+    <div class="col-lg-6">
+      <div class="card">
+        <h5 class="card-header">Brand Details And More Action</h5>
+        <div class="card-body">
+          <p *ngIf="selectedBrand" class="mb-3">You have selected: <strong>{{ selectedBrand.brandName }}</strong></p>
+          <div *ngIf="selectedBrand">
+            <input [(ngModel)]="selectedBrand.brandName" class="form-control mb-2" placeholder="Update Brand Name">
+            <button class="btn btn-primary" (click)="updateBrand()">Save Changes</button>
+            <button class="btn btn-secondary" (click)="cancelEdit()">Cancel</button>
+            <button class="btn btn-danger" (click)="deleteBrand(selectedBrand.brandId)">Delete</button>
+            <a class="btn btn-success" (click)=" getSupplierHTMLReport('brand')">Print PDF</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+

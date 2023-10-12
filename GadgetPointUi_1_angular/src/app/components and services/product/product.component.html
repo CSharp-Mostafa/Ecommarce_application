@@ -1,0 +1,196 @@
+<!-- Add a New Product Card -->
+<div class="col-lg-6">
+  <div class="card">
+    <h5 class="card-header">Add New Product</h5>
+    <div class="card-body">
+      <div class="form-group">
+        <label for="newProductName">Product Name</label>
+        <input [(ngModel)]="newProductName" class="form-control mb-2" id="newProductName" placeholder="Enter Product Name">
+      </div>
+      <div class="form-group">
+        <label for="newProductDescription">Description</label>
+        <input [(ngModel)]="newProductDescription" class="form-control mb-2" id="newProductDescription" placeholder="Enter Description">
+      </div>
+      <div class="form-group">
+        <label for="newProductPrice">Price</label>
+        <input [(ngModel)]="newProductPrice" type="number" class="form-control mb-2" id="newProductPrice" placeholder="Enter Price">
+      </div>
+      <div class="form-group">
+        <label for="newProductImage">Select Product Image</label>
+        <!-- Input for selecting a new image file -->
+        <input type="file" accept="image/png, image/jpeg" id="newProductImage" class="form-control-file mb-2"  #fileInput>
+    <!-- Display the selected image (if available) -->
+    <img *ngIf="selectedProduct?.productImage || newProductImage" [src]="selectedProduct?.productImage || newProductImage" alt="Product Image" class="product-image">
+  </div>
+      </div>
+      <div class="form-group">
+        <label for="newProductCategory">Category</label>
+        <select [(ngModel)]="selectedCategoryId" class="form-control" id="newProductCategory">
+          <option *ngFor="let category of categories" [value]="category.categoryId">{{ category.categoryName }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="newProductSubCategory">Subcategory</label>
+        <select [(ngModel)]="selectedSubCategoryId" class="form-control" id="newProductSubCategory">
+          <option *ngFor="let subcategory of subcategories" [value]="subcategory.subCategoryId">{{ subcategory.subCategoryName }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="newProductBrand">Brand</label>
+        <select [(ngModel)]="selectedBrandId" class="form-control" id="newProductBrand">
+          <option *ngFor="let brand of brands" [value]="brand.brandId">{{ brand.brandName }}</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" (click)="createProduct()">Create Product</button>
+    </div>
+  </div>
+
+
+
+<div class="row">
+  <!-- Explore Products Card -->
+  <div class="col-lg-6">
+    <div class="card">
+      <h5 class="card-header">Explore Products</h5>
+      <mat-form-field>
+        <mat-label>Filter</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Search Products" #input>
+      </mat-form-field>
+      <div class="card-body">
+        <mat-table [dataSource]="dataSource" matSort>
+          <!-- Serial Number Column -->
+          <ng-container matColumnDef="serialNumber">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Serial Number </mat-header-cell>
+            <mat-cell *matCellDef="let product; let i = index">{{ calculateRomanNumeral(i) }}</mat-cell>
+          </ng-container>
+          <!-- Product Name Column -->
+          <!-- <ng-container matColumnDef="productName">
+              <mat-header-cell *matHeaderCellDef mat-sort-header><strong>Product Name</strong></mat-header-cell>
+              <mat-cell *matCellDef="let product">{{ product.productName }}</mat-cell>
+          </ng-container> -->
+
+          <ng-container matColumnDef="productName">
+            <mat-header-cell *matHeaderCellDef mat-sort-header><strong>Product Name</strong></mat-header-cell>
+            <mat-cell *matCellDef="let product">{{ product.productName }}</mat-cell>
+          </ng-container>
+
+
+          <!-- Description Column -->
+          <ng-container matColumnDef="description">
+            <mat-header-cell *matHeaderCellDef mat-sort-header><strong>Description</strong></mat-header-cell>
+            <mat-cell *matCellDef="let product">{{ product.description }}</mat-cell>
+          </ng-container>
+          <!-- Price Column -->
+          <ng-container matColumnDef="price">
+            <mat-header-cell *matHeaderCellDef mat-sort-header><strong>Price</strong></mat-header-cell>
+            <mat-cell *matCellDef="let product">{{ product.price }}</mat-cell>
+          </ng-container>
+          <!-- Product Image Column -->
+<ng-container matColumnDef="productImage">
+  <mat-header-cell *matHeaderCellDef mat-sort-header><strong>Product Image</strong></mat-header-cell>
+  <mat-cell *matCellDef="let product">
+    <img [src]="product.productImage" alt="Product Image" class="product-image" style="max-width: 50px;">
+
+    <!-- <img [src]="product.updatedImage" alt="{{ product.imageFile }}" class="product-image"> -->
+  </mat-cell>
+</ng-container>
+         <!-- Category Column -->
+<ng-container matColumnDef="category">
+  <mat-header-cell *matHeaderCellDef mat-sort-header><strong>Category</strong></mat-header-cell>
+  <mat-cell *matCellDef="let product">{{product.category}}</mat-cell>
+</ng-container>
+
+<!-- Subcategory Column -->
+<ng-container matColumnDef="subCategory">
+  <mat-header-cell *matHeaderCellDef mat-sort-header><strong>Subcategory</strong></mat-header-cell>
+  <mat-cell *matCellDef="let product">{{ product.subcategory }}</mat-cell>
+</ng-container>
+
+<!-- Brand Column -->
+<ng-container matColumnDef="brand">
+  <mat-header-cell *matHeaderCellDef mat-sort-header><strong>Brand</strong></mat-header-cell>
+  <mat-cell *matCellDef="let product">{{ product.brand }}</mat-cell>
+</ng-container>
+
+
+          <!-- Action Column -->
+          <ng-container matColumnDef="action">
+            <mat-header-cell *matHeaderCellDef><strong>Action</strong></mat-header-cell>
+            <mat-cell *matCellDef="let product">
+              <button class="btn btn-primary btn-sm" (click)="onSelectForEdit(product)">Edit</button>
+              <!-- <button class="btn btn-danger btn-sm" (click)="deleteProduct(product.productId)">Delete</button> -->
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+          <!-- Row shown when there is no matching data. -->
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="8">No data matching the filter "{{ input.value }}"</td>
+          </tr>
+        </mat-table>
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="pageSize"></mat-paginator>
+      </div>
+    </div>
+  </div>
+  <!-- Product Details Card -->
+  <div class="col-lg-6">
+    <div class="card">
+      <h5 class="card-header">Product Details and More Action</h5>
+      <div class="card-body">
+        <p *ngIf="selectedProduct" class="mb-3">You have selected: <strong>{{ selectedProduct.productName }}</strong></p>
+        <div *ngIf="selectedProduct">
+          <div class="form-group">
+            <label for="updateProductName">Update Product Name</label>
+            <input [(ngModel)]="selectedProduct.productName" class="form-control mb-2" id="updateProductName" placeholder="Update Product Name">
+          </div>
+          <div class="form-group">
+            <label for="updateProductDescription">Update Description</label>
+            <input [(ngModel)]="selectedProduct.description" class="form-control mb-2" id="updateProductDescription" placeholder="Update Description">
+          </div>
+          <div class="form-group">
+            <label for="updateProductPrice">Update Price</label>
+            <input [(ngModel)]="selectedProduct.price" type="number" class="form-control mb-2" id="updateProductPrice" placeholder="Update Price">
+          </div>
+          <!-- <div class="form-group">
+            <label for="updateProductImage">Update Product Image URL</label>
+            <input [(ngModel)]="selectedProduct.productImage" class="form-control mb-2" id="updateProductImage" placeholder="Update Product Image URL">
+          </div> -->
+          <div class="form-group">
+              <label for="updateProductImage">Update Product Image</label>
+              <!-- Input for selecting a new image file -->
+              <input type="file" (change)="onImageSelected($event)" accept="image/png, image/jpeg" id="updateProductImage" class="form-control-file mb-2" >
+              <!-- Display the currently selected image (if available) -->
+              <img *ngIf="selectedProduct.productImage" [src]="selectedProduct.productImage" alt="Updated Product Image" class="product-image" style="max-width: 50px;">
+            </div>
+
+            <div class="form-group">
+              <label for="updateProductCategory">Update Category</label>
+              <select [(ngModel)]="selectedProduct.category" class="form-control" id="updateProductCategory">
+                <option *ngFor="let category of categories" [value]="category.categoryId">{{ category.categoryName }}</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="updateProductSubCategory">Update Subcategory</label>
+              <select [(ngModel)]="selectedProduct.subCategory" class="form-control" id="updateProductSubCategory">
+                <option *ngFor="let subcategory of subcategories" [value]="subcategory.subCategoryId">{{ subcategory.subCategoryName }}</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="updateProductBrand">Update Brand</label>
+              <select [(ngModel)]="selectedProduct.brand" class="form-control" id="updateProductBrand">
+                <option *ngFor="let brand of brands" [value]="brand.brandId">{{ brand.brandName }}</option>
+              </select>
+            </div>
+            
+
+            
+          <button class="btn btn-primary" (click)="updateProduct()">Save Changes</button>
+          <button class="btn btn-secondary" (click)="cancelEdit()">Cancel</button>
+          <button class="btn btn-danger" (click)="deleteProduct(selectedProduct.productId)">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

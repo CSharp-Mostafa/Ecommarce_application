@@ -1,0 +1,242 @@
+﻿@page "/subcategories"
+@using CustomerUI.Services;
+@using CustomerUI.Data;
+
+<h3 style="color: #808080; font-weight: bold;">All Sub-Categories Information</h3>
+
+<!-- Filtering -->
+
+<div class="d-flex align-items-center justify-content-between filter-container">
+    <div class="d-flex align-items-center">
+        <input type="text" @bind="filterText" placeholder="Filter by SubCategoryName" @oninput="OnFilterTextChanged">
+    </div>
+    <button @onclick="CreateSubCategory" class="btn btn-primary"><i class="fas fa-plus"></i> Add New Sub-Category</button>
+</div>
+<p>Serch Name: @filterText</p>
+<!-- Table with Sorting -->
+<table class="table">
+    <thead>
+        <tr>
+            <th>Serial No.</th>
+            <th @onclick="SortBySubCategoryName">Sub Category Name</th>
+            <th>Action</th> <!-- Actions column -->
+        </tr>
+    </thead>
+    <tbody>
+        @if (pagedSubCategories.Any())
+        {
+            @for (int i = 0; i < pagedSubCategories.Count(); i++)
+            {
+                var subCategory = pagedSubCategories.ElementAt(i);
+                int serialNumber = (CurPage - 1) * pageSize + i + 1;
+
+                <tr>
+                    <td>@serialNumber</td>
+                    <td>@subCategory.SubCategoryName</td>
+                    <td>
+                        <button @onclick="() => EditSubCategory(subCategory.SubCategoryId)" class="edit-button"><i class="fas fa-edit"></i> Edit</button>
+                        <button @onclick="() => DeleteSubCategory(subCategory.SubCategoryId)" class="delete-button"><i class="fas fa-trash"></i>  Delete</button>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="3">No Results Found</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <input type="button" class="btn btn-lg" id="prev" @onclick="PrevPage" value="Previous" />
+    @for (int i = 1; i <= totalPages; i++)
+    {
+        int j = i;
+        @if (i == CurPage)
+        {
+            <span class="px-2" style="font-weight:bold">@i</span>
+        }
+        else
+        {
+            <span class="px-2" cursor="pointer" @onclick="()=> ShowPage(j)">@i</span>
+        }
+    }
+    <input type="button" class="btn btn-lg" id="next" @onclick="NextPage" value="Next" />
+</div>
+
+@code {
+    private int serialOffset = 1;
+    private int serialNumber = 1; // Initialize to 1 or any other starting value
+
+    private int CurPage = 1;
+    private int pageSize = 5; // Adjust the page size as needed
+
+    public string filterText = "";
+    private string sortBy = "SubCategoryId";
+    private bool sortAscending = true;
+
+    private SubCategory? editSubCategory;
+    private IEnumerable<SubCategory> SubCategoriesList = new List<SubCategory>();
+    private IEnumerable<SubCategory> pagedSubCategories = new List<SubCategory>(); // Track the paged items
+    private int totalPages;
+
+    [Inject]
+    private ISubCategoryService SubCategoryService { get; set; }
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        SubCategoriesList = await SubCategoryService.GetSubCategories();
+        await ShowPage();
+    }
+
+    protected async Task ShowPage()
+    {
+        // Apply filtering first
+        var filteredSubCategoriesList = GetFilteredAndSortedSubCategories();
+
+        // Calculate the index to start skipping from based on CurPage and pageSize
+        int startIndex = (CurPage - 1) * pageSize;
+
+        // Filter and paginate the SubCategoriesList
+        pagedSubCategories = filteredSubCategoriesList.Skip(startIndex).Take(pageSize).ToList();
+
+        // Calculate total pages based on the filtered list
+        totalPages = (int)Math.Ceiling(filteredSubCategoriesList.Count() / (double)pageSize);
+    }
+
+    protected async Task NextPage()
+    {
+        if (CurPage < totalPages)
+        {
+            CurPage++;
+            await ShowPage();
+        }
+    }
+
+    protected async Task PrevPage()
+    {
+        if (CurPage > 1)
+        {
+            CurPage--;
+            await ShowPage();
+        }
+    }
+
+    protected async Task ShowPage(int i)
+    {
+        CurPage = i;
+        await ShowPage();
+    }
+
+    private void CreateSubCategory()
+    {
+        NavigationManager.NavigateTo("/create-subcategory");
+    }
+
+    private async void EditSubCategory(int subCategoryId)
+    {
+        NavigationManager.NavigateTo($"/edit-subcategory/{subCategoryId}");
+
+        try
+        {
+            editSubCategory = await SubCategoryService.GetSubCategoryById(subCategoryId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading SubCategory: {ex.Message}");
+        }
+    }
+
+    private async Task DeleteSubCategory(int subCategoryId)
+    {
+        try
+        {
+            await SubCategoryService.DeleteSubCategory(subCategoryId);
+            SubCategoriesList = await SubCategoryService.GetSubCategories();
+            ShowPage();
+            //ApplyFilter();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting SubCategory: {ex.Message}");
+        }
+    }
+
+    public IEnumerable<SubCategory> GetFilteredAndSortedSubCategories()
+    {
+        var filteredSubCategoriesList = SubCategoriesList;
+
+        // Filter based on SubCategoryName
+        //if (!string.IsNullOrEmpty(filterText))
+        //{
+        //    filteredSubCategoriesList = filteredSubCategoriesList
+        //        .Where(subCategory => subCategory.SubCategoryName.Contains(filterText, StringComparison.OrdinalIgnoreCase));
+        //}
+
+        if (!string.IsNullOrEmpty(filterText))
+        {
+            var searchText = filterText.Trim().ToLower();
+            Console.WriteLine($"Applying filter: {searchText}"); // Add this line for debugging
+            filteredSubCategoriesList = filteredSubCategoriesList
+                .Where(subCategory => subCategory.SubCategoryName.ToLower().Contains(searchText));
+        }
+
+
+
+        // Sort based on the selected column
+        switch (sortBy)
+        {
+            case "SubCategoryName":
+                filteredSubCategoriesList = sortAscending
+                    ? filteredSubCategoriesList.OrderBy(subCategory => subCategory.SubCategoryName)
+                    : filteredSubCategoriesList.OrderByDescending(subCategory => subCategory.SubCategoryName);
+                break;
+            // Add more cases for other columns if needed
+
+            default:
+                filteredSubCategoriesList = sortAscending
+                    ? filteredSubCategoriesList.OrderBy(subCategory => subCategory.SubCategoryId)
+                    : filteredSubCategoriesList.OrderByDescending(subCategory => subCategory.SubCategoryId);
+                break;
+        }
+
+        return filteredSubCategoriesList;
+    }
+
+    //private void SortBySubCategoryId() => SetSortCriteria("SubCategoryId");
+    //private void SortBySubCategoryName() => SetSortCriteria("SubCategoryName");
+
+    private void SortBySubCategoryName()
+    {
+        SetSortCriteria("SubCategoryName");
+        ShowPage();
+    }
+
+
+    private void SetSortCriteria(string column)
+    {
+        if (sortBy == column)
+            sortAscending = !sortAscending;
+        else
+            sortAscending = true;
+
+        sortBy = column;
+    }
+
+
+    public void OnFilterTextChanged(ChangeEventArgs e)
+    {
+        filterText = e.Value.ToString();
+        ShowPage();
+    }
+
+
+    //private void ApplyFilter()
+    //{
+    //    ShowPage(); // Show the first page after applying the filter
+    //}
+}

@@ -1,0 +1,136 @@
+﻿@page "/fetchSupplier"
+
+@using CustomerUI.Data
+@using CustomerUI.Services
+@using Microsoft.JSInterop
+
+@inject ISupplierService SupplierService
+@inject IJSRuntime js
+
+<PageTitle>Supplier Report</PageTitle>
+
+
+
+
+@if (suppliers == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+
+
+    <div class="container-fluid">
+
+
+        <div class="row">
+
+            <div id="printableTable">
+
+                
+
+                <div class="page-header">
+                    <div class="col-12">
+                        <div class="row">
+                            <!-- Image Div on the Left -->
+                            <div class="col-md-2">
+                                <img src="https://i0.wp.com/fullopportunities.com/wp-content/uploads/2023/09/IsDB-BISEW-IT-Scholarship-Programme.jpg?resize=696%2C418&ssl=1" width="100" height="100" />
+                            </div>
+                            <!-- Content Div on the Right -->
+                            <div class="col-md-10">
+                                <h2 class="mb-0">IsdB BISEW IT Scholarship Program</h2>
+                                <p class="text-center">Chittagong, NVIT</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+
+
+                @*============================*@
+
+                <div class="full-page">
+                    <div class="table">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Sl No</th>
+                                    <th> Name</th>
+                                    <th> Email</th>
+                                    <th> ContactNo</th>
+                                    <th> Address</th>
+                                   
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var supplier in suppliers)
+                                {
+                                    <tr>
+                                        <td>@supplier.SupplierId</td>
+                                        <td>@supplier.SupplierName</td>
+                                        <td>@supplier.Email</td>
+                                        <td>@supplier.ContactNo</td>
+                                        <td>@supplier.Address</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+
+            </div>
+
+        </div>
+
+        <div id="printButton">
+            <button class="btn btn-primary " @onclick="PrintTable">Print Table</button>
+        </div>
+
+
+        <div class="page-footer">
+            <div class="col-12 bg-light py-3">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="text-left">Print Date/Time: @DateTime.Now</p>
+                    </div>
+                    <div class="col-12">
+                        <p class="text-center">Powered by Your Company</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+
+
+
+
+}
+
+@code {
+    private IEnumerable<Supplier> suppliers = new List<Supplier>();
+
+    [Parameter]
+    public string Param { get; set; }
+
+    private async Task PrintTable()
+    {
+        // Use JavaScript interop to trigger the browser's print functionality
+        await js.InvokeVoidAsync("printTable", "printableTable");
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        suppliers = (await SupplierService.GetSuppliers()).ToList();
+        await js.InvokeVoidAsync("registerPrintTableFunction");
+    }
+}

@@ -1,0 +1,63 @@
+﻿@inherits LayoutComponentBase
+@using CustomerUI.Services
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+@using Microsoft.AspNetCore.Components.Authorization
+
+<PageTitle>CustomerUI</PageTitle>
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            @if (!string.IsNullOrEmpty(UserDisplayName))
+            {
+                <p>Welcome, @UserDisplayName!</p>
+                <a href="#" @onclick="Logout">Logout</a>
+            }
+            else
+            {
+                <a href="/login">Login</a>
+                <a href="/register">Register</a>
+            }
+        </div>
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code {
+    private string UserDisplayName = "";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Retrieve user display name from local storage
+            UserDisplayName = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userDisplayName");
+            await Task.Delay(100); // Introduce a delay
+            StateHasChanged(); // Notify Blazor to re-render the component
+        }
+    }
+
+
+    private async Task Logout()
+    {
+        // Clear user authentication data from local storage
+        await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "userDisplayName");
+        await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "userToken");
+
+        // Update UserDisplayName to an empty string
+        UserDisplayName = "";
+
+        // Notify Blazor to re-render the component
+        StateHasChanged();
+
+        // Redirect to the login page or perform other actions after logout
+        Navigation.NavigateTo("/login");
+    }
+}

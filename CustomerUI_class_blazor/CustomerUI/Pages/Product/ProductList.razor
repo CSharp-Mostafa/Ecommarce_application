@@ -1,0 +1,274 @@
+﻿@page "/products"
+@using CustomerUI.Services;
+@using CustomerUI.Data;
+@inject IProductService productService
+
+<h3>Product List</h3>
+
+<!-- Filtering -->
+<div class="d-flex align-items-center justify-content-between filter-container">
+    <div class="d-flex">
+        <input type="text" @bind="filterText" placeholder="Filter by Product Name" @oninput="OnFilterTextChanged">
+    </div>
+    <button @onclick="CreateProduct" class="btn btn-primary"><i class="fas fa-plus"></i> Add New Product</button>
+</div>
+<p>Search Name: @filterText</p>
+
+<!-- Table with Sorting and Pagination -->
+<table class="table">
+    <thead>
+        <tr>
+            <th @onclick="SortByPrice">Serial No.</th>
+            <th>Product Name</th>
+            <th @onclick="SortByPrice">Price</th>
+            <th @onclick="SortByCategory">Category</th>
+            <th @onclick="SortBySubCategory">SubCategory</th>
+            <th @onclick="SortByBrand">Brand</th>
+            <th>Product Image</th>
+            <th>Actions</th> <!-- Actions column -->
+        </tr>
+    </thead>
+    <tbody>
+        @if (pagedProducts.Any())
+        {
+            @for (int i = 0; i < pagedProducts.Count(); i++)
+            {
+                var product = pagedProducts.ElementAt(i);
+                int serialNumber = (CurPage - 1) * pageSize + i + 1; // Calculate the serial number
+
+                <tr>
+                    <td>@serialNumber</td> <!-- Display the serial number -->
+                    
+                    <td>@product.ProductName</td>
+                    <td>@product.Price.ToString("C")</td>
+                    <td>@product.Category</td>
+                    <td>@product.SubCategory</td>
+                    <td>@product.Brand</td>
+                    <td>
+                        <!-- Display the product image as an actual image -->
+                        <img src="@product.ProductImage" alt="@product.ProductName" style="max-width: 65px;" />
+                    </td>
+                    <td>
+                        @*<a href="/productdetails/@product.ProductId">Details</a>*@
+                        <button @onclick="() => EditProduct(product.ProductId)" class="edit-button"><i class="fas fa-edit"></i> Edit</button>
+                        <button @onclick="() => DeleteProduct(product.ProductId)" class="delete-button"><i class="fas fa-trash"></i>  Delete</button>
+
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="6">No Results Found</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div>
+    <input type="button" class="btn btn-lg" id="prev" @onclick="PrevPage" value="Previous" />
+    @for (int i = 1; i <= totalPages; i++)
+    {
+        int j = i;
+        @if (i == CurPage)
+        {
+            <span class="px-2" style="font-weight:bold">@i</span>
+        }
+        else
+        {
+            <span class="px-2" cursor="pointer" @onclick="()=> ShowPage(j)">@i</span>
+        }
+    }
+    <input type="button" class="btn btn-lg" id="next" @onclick="NextPage" value="Next" />
+</div>
+
+@code {
+    private int CurPage = 1;
+    private int pageSize = 5;
+    private string filterText = "";
+    private string sortBy = "ProductName";
+    private bool sortAscending = true;
+    private IEnumerable<Product> products = new List<Product>();
+    private IEnumerable<Product> pagedProducts = new List<Product>();
+    private int totalPages;
+
+
+    private Product? editProduct;
+    private Product newProduct = new Product();
+    private List<Category> Categories = new List<Category>();
+    private List<SubCategory> SubCategory = new List<SubCategory>();
+    private List<Brand> Brand = new List<Brand>();
+
+    [Inject]
+    private ICategoryService CategoryService { get; set; }
+    [Inject]
+    private ISubCategoryService SubCategoryService { get; set; }
+    [Inject]
+    private IBrandService BrandService { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await productService.GetAllProducts();
+        await ShowPage();
+        //await DeleteProduct();
+    }
+
+    [Inject]
+    private IProductService ProductService { get; set; }
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    public void CreateProduct()
+    {
+        NavigationManager.NavigateTo("/create-product");
+
+    }
+
+    private async void EditProduct(int productId)
+    {
+        NavigationManager.NavigateTo($"/edit-product/{productId}");
+        try
+        {
+            editProduct = await ProductService.GetProductById(productId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading Product: {ex.Message}");
+        }
+    }
+
+    private IEnumerable<Product> ProductsList = new List<Product>();
+
+    private async Task DeleteProduct(int productId)
+    {
+        try
+        {
+            await productService.DeleteProduct(productId);
+            //ProductsList = await productService.GetAllProducts();
+            await ShowPage();
+           await OnInitializedAsync();
+            //ApplyFilter(); // Reapply the filter after deletion
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting brand: {ex.Message}");
+        }
+        // Add your logic to delete the product
+        // After deletion, refresh the product list by re-fetching products and updating pagedProducts
+    }
+
+    protected async Task ShowPage()
+    {
+        var filteredProductsList = GetFilteredAndSortedProducts();
+        int startIndex = (CurPage - 1) * pageSize;
+        pagedProducts = filteredProductsList.Skip(startIndex).Take(pageSize).ToList();
+        totalPages = (int)Math.Ceiling(filteredProductsList.Count() / (double)pageSize);
+    }
+
+    protected async Task NextPage()
+    {
+        if (CurPage < totalPages)
+        {
+            CurPage++;
+            await ShowPage();
+        }
+    }
+
+    protected async Task PrevPage()
+    {
+        if (CurPage > 1)
+        {
+            CurPage--;
+            await ShowPage();
+        }
+    }
+
+    protected async Task ShowPage(int i)
+    {
+        CurPage = i;
+        await ShowPage();
+    }
+
+    private IEnumerable<Product> GetFilteredAndSortedProducts()
+    {
+        var filteredProductsList = products;
+
+        if (!string.IsNullOrEmpty(filterText))
+        {
+            var searchText = filterText.Trim().ToLower();
+            filteredProductsList = filteredProductsList
+                .Where(product => product.ProductName.ToLower().Contains(searchText));
+        }
+
+        switch (sortBy)
+        {
+            case "ProductName":
+                filteredProductsList = sortAscending
+                    ? filteredProductsList.OrderBy(product => product.ProductName)
+                    : filteredProductsList.OrderByDescending(product => product.ProductName);
+                break;
+            case "Price":
+                filteredProductsList = sortAscending
+                    ? filteredProductsList.OrderBy(product => product.Price)
+                    : filteredProductsList.OrderByDescending(product => product.Price);
+                break;
+            case "Category":
+                filteredProductsList = sortAscending
+                    ? filteredProductsList.OrderBy(product => product.Category)
+                    : filteredProductsList.OrderByDescending(product => product.Category);
+                break;
+            case "SubCategory":
+                filteredProductsList = sortAscending
+                    ? filteredProductsList.OrderBy(product => product.SubCategory)
+                    : filteredProductsList.OrderByDescending(product => product.SubCategory);
+                break;
+            case "Brand":
+                filteredProductsList = sortAscending
+                    ? filteredProductsList.OrderBy(product => product.Brand)
+                    : filteredProductsList.OrderByDescending(product => product.Brand);
+                break;
+        }
+
+        return filteredProductsList;
+    }
+
+    private void SortByPrice()
+    {
+        SetSortCriteria("Price");
+        ShowPage();
+    }
+
+    private void SortByCategory()
+    {
+        SetSortCriteria("Category");
+        ShowPage();
+    }
+
+    private void SortBySubCategory()
+    {
+        SetSortCriteria("SubCategory");
+        ShowPage();
+    }
+
+    private void SortByBrand()
+    {
+        SetSortCriteria("Brand");
+        ShowPage();
+    }
+
+    private void SetSortCriteria(string column)
+    {
+        if (sortBy == column)
+            sortAscending = !sortAscending;
+        else
+            sortAscending = true;
+
+        sortBy = column;
+    }
+
+    private void OnFilterTextChanged(ChangeEventArgs e)
+    {
+        filterText = e.Value.ToString();
+        ShowPage();
+    }
+}

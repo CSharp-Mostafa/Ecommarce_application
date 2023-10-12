@@ -1,0 +1,50 @@
+﻿@page "/edit-subcategory/{Id}"
+@using CustomerUI.Services;
+@using CustomerUI.Data;
+
+<h3>Edit SubCategory</h3>
+
+<!-- SubCategory editing form -->
+<form @onsubmit="UpdateSubCategory">
+    <div class="form-group">
+        <label for="subCategoryName">SubCategory Name:</label>
+        <input type="text" class="form-control" id="subCategoryName" @bind="editedSubCategory.SubCategoryName">
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Update</button>
+</form>
+
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+
+    private SubCategory editedSubCategory = new SubCategory();
+
+    [Inject]
+    private ISubCategoryService SubCategoryService { get; set; }
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (int.TryParse(Id, out int subCategoryId))
+        {
+            editedSubCategory = await SubCategoryService.GetSubCategoryById(subCategoryId);
+        }
+    }
+
+    private async Task UpdateSubCategory()
+    {
+        try
+        {
+            await SubCategoryService.UpdateSubCategory(editedSubCategory);
+            NavigationManager.NavigateTo("/subcategories");
+        }
+        catch (Exception ex)
+        {
+            // Handle any errors or show error messages to the user
+            Console.WriteLine($"Error updating SubCategory: {ex.Message}");
+        }
+    }
+}

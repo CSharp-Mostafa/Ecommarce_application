@@ -1,0 +1,30 @@
+﻿@page "/create-brand"
+@using CustomerUI.Services;
+@using CustomerUI.Data;
+
+<h3>Create Brand</h3>
+
+<form @onsubmit="CreateBrandAsync">
+    <div class="form-group">
+        <label for="brandName">Brand Name:</label>
+        <input type="text" class="form-control" id="brandName" @bind="newBrand.BrandName">
+    </div>
+    <br/>
+    <button type="submit" class="btn btn-primary">Add New Brand</button>
+</form>
+
+
+@code {
+    private Brand newBrand = new Brand();
+
+    [Inject]
+    private IBrandService BrandService { get; set; }
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    private async Task CreateBrandAsync()
+    {
+        await BrandService.CreateBrand(newBrand);
+        NavigationManager.NavigateTo("/brands");
+    }
+}

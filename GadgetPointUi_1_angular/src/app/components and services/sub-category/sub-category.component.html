@@ -1,0 +1,70 @@
+<div class="container py-5">
+    <div class="row mb-4">
+      <div class="col-lg-6">
+        <div class="card">
+          <h5 class="card-header">Create New SubCategory <span class="text-primary"><i class="bi bi-plus-circle"></i></span></h5>
+          <div class="input-group">
+            <input [(ngModel)]="newSubCategoryName" class="form-control me-2" placeholder="New SubCategory Name">
+            <button class="btn btn-success" (click)="createSubCategory()">Create</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <!-- Explore SubCategories Card -->
+      <div class="col-lg-6">
+        <div class="card">
+          <h5 class="card-header">Explore SubCategories</h5>
+          <mat-form-field>
+            <mat-label>Filter</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
+          </mat-form-field>
+          <div class="card-body">
+            <mat-table [dataSource]="dataSource" matSort>
+  
+              <!-- Serial Number Column -->
+              <ng-container matColumnDef="serialNumber">
+                <mat-header-cell *matHeaderCellDef mat-sort-header><strong> Serial </strong></mat-header-cell>
+                <mat-cell *matCellDef="let subCategory; let i = index">{{ calculateRomanNumeral(i) }}</mat-cell>
+              </ng-container>
+  
+              <!-- SubCategory Name Column -->
+              <ng-container matColumnDef="subCategoryName">
+                <mat-header-cell *matHeaderCellDef mat-sort-header><strong> SubCategory </strong></mat-header-cell>
+                <mat-cell *matCellDef="let subCategory"> {{ subCategory.subCategoryName }} </mat-cell>
+              </ng-container>
+  
+              <!-- Action Column -->
+              <ng-container matColumnDef="action">
+                <mat-header-cell *matHeaderCellDef><strong>Action</strong></mat-header-cell>
+                <mat-cell *matCellDef="let subCategory">
+                  <button class="btn btn-primary btn-sm" (click)="onSelectForEdit(subCategory)">Edit</button>
+                </mat-cell>
+              </ng-container>
+  
+              <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+            </mat-table>
+            <mat-paginator [pageSizeOptions]="[5, 10, 25]" [pageSize]="pageSize"></mat-paginator>
+          </div>
+        </div>
+      </div>
+  
+      <!-- SubCategory Details Card -->
+      <div class="col-lg-6">
+        <div class="card">
+          <h5 class="card-header">SubCategory Details And More Action</h5>
+          <div class="card-body">
+            <p *ngIf="selectedSubCategory" class="mb-3">You have selected: <strong>{{ selectedSubCategory.subCategoryName }}</strong></p>
+            <div *ngIf="selectedSubCategory">
+              <input [(ngModel)]="selectedSubCategory.subCategoryName" class="form-control mb-2" placeholder="Update SubCategory Name">
+              <button class="btn btn-primary" (click)="updateSubCategory()">Save Changes</button>
+              <button class="btn btn-secondary" (click)="cancelEdit()">Cancel</button>
+              <button class="btn btn-danger" (click)="deleteSubCategory(selectedSubCategory.subCategoryId)">Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  

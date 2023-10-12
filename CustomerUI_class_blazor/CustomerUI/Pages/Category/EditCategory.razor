@@ -1,0 +1,50 @@
+﻿@page "/edit-category/{Id}"
+@using CustomerUI.Services;
+@using CustomerUI.Data;
+
+<h3>Edit Category</h3>
+
+<!-- Category editing form -->
+<form @onsubmit="UpdateCategory">
+    <div class="form-group">
+        <label for="categoryName">Category Name:</label>
+        <input type="text" class="form-control" id="categoryName" @bind="editedCategory.CategoryName">
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Update</button>
+</form>
+
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+
+    private Category editedCategory = new Category();
+
+    [Inject]
+    private ICategoryService CategoryService { get; set; }
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (int.TryParse(Id, out int categoryId))
+        {
+            editedCategory = await CategoryService.GetCategoryById(categoryId);
+        }
+    }
+
+    private async Task UpdateCategory()
+    {
+        try
+        {
+            await CategoryService.UpdateCategory(editedCategory);
+            NavigationManager.NavigateTo("/categories");
+        }
+        catch (Exception ex)
+        {
+            // Handle any errors or show error messages to the user
+            Console.WriteLine($"Error updating Category: {ex.Message}");
+        }
+    }
+}

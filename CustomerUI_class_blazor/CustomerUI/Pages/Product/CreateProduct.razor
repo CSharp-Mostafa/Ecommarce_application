@@ -1,0 +1,158 @@
+﻿@page "/create-product"
+@using CustomerUI.Services
+@using CustomerUI.Data
+@using System;
+@using System.Collections.Generic;
+@inject IProductService productService
+
+<div class="row">
+    <div class="col-lg-9">
+        <h3>Create Product</h3>
+    </div>
+    <div class="col-lg-3 text-right">
+        <a href="/products" role="button" class="btn btn-secondary btn-sm">Back to List</a>
+    </div>
+</div>
+
+<div class="form-control" style="background-color: gainsboro;">
+    <div class="row">
+        <div class="col-5">
+            <div class="form-group">
+                <label for="productName">Product Name:</label>
+                <input type="text" class="form-control" id="productName" name="productName" @bind="newProduct.ProductName">
+            </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <input type="text" class="form-control" id="description" @bind="newProduct.Description">
+            </div>
+            <div class="form-group">
+                <label for="price">Price:</label>
+                <input type="number" class="form-control" id="price" @bind="newProduct.Price">
+            </div>
+            <div class="form-group">
+                <label for="category">Category:</label>
+                <select class="form-control" id="category" @bind="newProduct.CategoryId">
+                    <option value="">-- Select Category --</option>
+                    @foreach (var categoryName in Categories)
+                    {
+                        <option value="@categoryName.CategoryId">@categoryName.CategoryName</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="subCategory">Sub-Category:</label>
+                <select class="form-control" id="subCategory" @bind="newProduct.SubCategoryId">
+                    <option value="">-- Select Sub-Category --</option>
+                    @foreach (var subCategoryName in SubCategory)
+                    {
+                        <option value="@subCategoryName.SubCategoryId">@subCategoryName.SubCategoryName</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="brand">Brand:</label>
+                <select class="form-control" id="brand" @bind="newProduct.BrandId">
+                    <option value="">-- Select Brand --</option>
+                    @foreach (var brand in Brand)
+                    {
+                        <option value="@brand.BrandId">@brand.BrandName</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="productImage">Product Image:</label>
+                <InputFile class="form-control-file" id="productImage" OnChange="HandleFileInputChange" />
+                @if (!string.IsNullOrEmpty(newProduct.ProductImage))
+                {
+                    <img src="@newProduct.ProductImage" alt="Product Image" />
+                    <input type="hidden" name="ProductImage" @bind="newProduct.ProductImage" />
+                }
+            </div>
+            <div class="form-group">
+                <label for="productIsActive">Status:</label>
+                <select class="form-control" id="productIsActive" @bind="newProduct.IsActive">
+                    <option value="true">Active</option>
+                    <option value="false">Not Active</option>
+                </select>
+            </div>
+            <br />
+            <button class="btn btn-light" @onclick="Clear">All Clear</button>
+            <button class="btn btn-primary" @onclick="CreateProductAsync">Create</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private Product newProduct = new Product();
+    private List<Category> Categories = new List<Category>();
+    private List<SubCategory> SubCategory = new List<SubCategory>();
+    private List<Brand> Brand = new List<Brand>();
+
+    [Inject]
+    private ICategoryService CategoryService { get; set; }
+    [Inject]
+    private ISubCategoryService SubCategoryService { get; set; }
+    [Inject]
+    private IBrandService BrandService { get; set; }
+    [Inject]
+    private IProductService ProductService { get; set; }
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    private async Task HandleFileInputChange(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file != null)
+        {
+            var buffer = new byte[file.Size];
+            await file.OpenReadStream().ReadAsync(buffer);
+            newProduct.ProductImage = "data:image/jpeg;base64," + Convert.ToBase64String(buffer);
+        }
+
+    }
+
+    private async Task CreateProductAsync()
+    {
+        try
+        {
+            // Create a new MultipartFormDataContent to send data as a form
+            var formData = new MultipartFormDataContent();
+
+            // Add your product data to the form data
+            formData.Add(new StringContent(newProduct.ProductName), "ProductName");
+            formData.Add(new StringContent(newProduct.Description ?? ""), "Description");
+            formData.Add(new StringContent(newProduct.Price.ToString()), "Price");
+            formData.Add(new StringContent(newProduct.CategoryId), "CategoryId");
+            formData.Add(new StringContent(newProduct.SubCategoryId), "SubCategoryId");
+            formData.Add(new StringContent(newProduct.BrandId), "BrandId");
+            formData.Add(new StringContent(newProduct.IsActive.ToString()), "IsActive");
+
+            // Add the base64-encoded image to the form data
+            formData.Add(new StringContent(newProduct.ProductImage), "ProductImage");
+
+            // Send the HTTP POST request with the form data
+            await productService.CreateProductAsync(formData);
+
+            // Product created successfully. Redirect to the product list page.
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("An error occurred while creating the product:");
+            Console.WriteLine(ex.Message);
+        }
+        NavigationManager.NavigateTo("/products");
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Categories = (await CategoryService.GetCategories()).ToList();
+        SubCategory = (await SubCategoryService.GetSubCategories()).ToList();
+        Brand = (await BrandService.GetBrands()).ToList();
+    }
+
+    private void Clear()
+    {
+        newProduct = new Product();
+    }
+}

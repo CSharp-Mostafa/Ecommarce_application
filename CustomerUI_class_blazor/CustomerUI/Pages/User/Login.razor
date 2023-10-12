@@ -1,0 +1,53 @@
+﻿@page "/login"
+@using CustomerUI.Data
+@using CustomerUI.Services
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+
+<h3>Login</h3>
+
+<EditForm Model="loginDto" OnValidSubmit="Loginmain">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="Email">Email</label>
+        <InputText id="Email" class="form-control" @bind-Value="loginDto.Email" />
+    </div>
+    <div class="form-group">
+        <label for="Password">Password</label>
+        <InputText id="Password" type="password" class="form-control" @bind-Value="loginDto.Password" />
+    </div>
+    <button type="submit" class="btn btn-primary">Login</button>
+</EditForm>
+
+@code {
+    private LoginDTO loginDto = new LoginDTO();
+
+    private async Task Loginmain()
+    {
+        var user = await AuthService.Login(loginDto);
+
+        if (user != null)
+        {
+            // Check if the user is an admin based on their email
+            if (user.Email == "admin@test.com")
+            {
+                // Notify the component to re-render
+                StateHasChanged();
+                Navigation.NavigateTo("");
+                await JSRuntime.InvokeVoidAsync("location.reload");
+            }
+            else
+            {
+                // For non-admin users, navigate to the home page directly
+                Navigation.NavigateTo("");
+            }
+        }
+        else
+        {
+            // Handle login failure
+        }
+    }
+}

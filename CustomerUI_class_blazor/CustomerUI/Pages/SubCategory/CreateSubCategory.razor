@@ -1,0 +1,29 @@
+﻿@page "/create-subcategory"
+@using CustomerUI.Services;
+@using CustomerUI.Data;
+
+<h3>Create SubCategory</h3>
+
+<form @onsubmit="CreateSubCategoryAsync">
+    <div class="form-group">
+        <label for="subCategoryName">SubCategory Name:</label>
+        <input type="text" class="form-control" id="subCategoryName" @bind="newSubCategory.SubCategoryName">
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Add New SubCategory</button>
+</form>
+
+@code {
+    private SubCategory newSubCategory = new SubCategory();
+
+    [Inject]
+    private ISubCategoryService SubCategoryService { get; set; }
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    private async Task CreateSubCategoryAsync()
+    {
+        await SubCategoryService.CreateSubCategory(newSubCategory);
+        NavigationManager.NavigateTo("/subcategories");
+    }
+}

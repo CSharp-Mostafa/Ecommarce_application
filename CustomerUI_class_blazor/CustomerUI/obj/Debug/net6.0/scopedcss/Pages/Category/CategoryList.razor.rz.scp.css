@@ -1,0 +1,64 @@
+.filter-container[b-ummskuwqss] {
+    margin-bottom: 20px;
+}
+
+.filter-input[b-ummskuwqss] {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.filter-button[b-ummskuwqss] {
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.table[b-ummskuwqss] {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+    .table th[b-ummskuwqss] {
+        background-color: #808080;
+        color: #fff;
+        padding: 10px;
+        cursor: pointer;
+    }
+
+    .table td[b-ummskuwqss] {
+        border: 1px solid #ccc;
+        padding: 10px;
+    }
+
+.edit-button[b-ummskuwqss] {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.delete-button[b-ummskuwqss] {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.create-button[b-ummskuwqss] {
+    background-color: #17a2b8;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}

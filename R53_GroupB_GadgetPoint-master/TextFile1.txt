@@ -1,0 +1,608 @@
+    
+         // ...
+
+        //[HttpGet("generatehtmlreportpdf")]
+        //        public IActionResult GenerateHtmlReportToPdf(Supplier supplier)
+        //        {
+        //            // Your HTML content goes here
+
+        //            PdfDocument document = new PdfDocument();
+        //            PdfPage page = document.AddPage();
+        //            var publisher = _context.Suppliers.FindAsync(supplier);
+        //            var sb = new StringBuilder();
+        //            sb.AppendLine("<html>");
+        //            sb.AppendLine("<head><title>publisher information</title></head>");
+        //            sb.AppendLine("<body>");
+
+        //            // header
+        //            sb.AppendLine("<h1>publisher information</h1>");
+
+        //            // create an html table for publisher details
+        //            sb.AppendLine("<table style='width:100%; border: 1px solid #000'>");
+        //            sb.AppendLine("<thead style='font-weight:bold'>");
+        //            sb.AppendLine("<tr>");
+        //            sb.AppendLine("<td style='border:1px solid #000'> SL No </td>");
+
+        //            sb.AppendLine("<td style='border:1px solid #000'> Publisher Name </td>");
+        //            sb.AppendLine("<td style='border:1px solid #000'> Address </td>");
+        //            sb.AppendLine("<td style='border:1px solid #000'> Email </td>");
+        //            sb.AppendLine("<td style='border:1px solid #000'> Phone Number </td>");
+        //            // add more table headers as needed
+        //            sb.AppendLine("</tr>");
+        //            sb.AppendLine("</thead>");
+
+        //            sb.AppendLine("<tbody>");
+        //            sb.AppendLine("<tr>");
+        //            sb.AppendLine($"<td>{supplier.SupplierName}</td>");
+
+        //            sb.AppendLine($"<td>{supplier.Address}</td>");
+        //            sb.AppendLine($"<td>{supplier.Email}</td>");
+        //            sb.AppendLine($"<td>{supplier.ContactNo}</td>");
+        //            sb.AppendLine("</tr>");
+        //            sb.AppendLine("</tbody>");
+
+        //            sb.AppendLine("</table>");
+
+        //            // closing tags
+        //            sb.AppendLine("</body>");
+        //            sb.AppendLine("</html>");
+
+        //            // Create a PDF document
+        //          //  PdfDocument document = PdfGenerator.GeneratePdf(AppendLine, PageSize.A4);
+
+        //        // Save the PDF document to a MemoryStream
+        //        MemoryStream stream = new MemoryStream();
+        //        document.Save(stream, false);
+        //        stream.Seek(0, SeekOrigin.Begin);
+
+        //        // Define the filename for the PDF
+        //        string filename = "SupplierReport.pdf";
+
+        //        // Return the PDF as a file download
+        //        return File(stream, "application/pdf", filename);
+        //    }
+
+
+
+        //[HttpGet("generateallpdf")]
+        //public async Task<IActionResult> GenerateAllSuppliersPDF()
+        //{
+        //    var suppliers = await _context.Suppliers
+        //        // .Include(c => c.Country) // Include the Country information
+        //        .ToListAsync();
+
+        //    //if (suppliers == null || suppliers.Count == 0)
+        //    //{
+        //    //    return NotFound("No suppliers found.");
+        //    //}
+
+        //    // Create a new PDF document
+        //    PdfDocument document = new PdfDocument();
+
+        //    document.Info.Title = "Supplier List Information";
+        //    PdfPage page = document.AddPage();
+        //    XGraphics gfx = XGraphics.FromPdfPage(page);
+        //    XFont font = new XFont("Verdana", 12, XFontStyle.Regular);
+
+        //    // Define table properties
+        //    int tableStartX = 50;
+        //    int tableStartY = 50;
+        //    int cellPadding = 10;
+        //    int columnWidth = 150;
+        //    int rowHeight = 30;
+
+        //    // Define table headers
+        //    List<string> headers = new List<string>
+        //    {
+
+        //        //          "Id",
+        //        //"City Name",
+        //        //"Latitude",
+        //        //"Longitude",
+        //        //"Country Name"
+
+        //    };
+
+        //    // Create the table and set table properties
+        //    int currentY = tableStartY;
+        //    foreach (var header in headers)
+        //    {
+        //        gfx.DrawRectangle(XPens.Black, new XRect(tableStartX, currentY, columnWidth, rowHeight));
+        //        gfx.DrawString(header, font, XBrushes.Black, new XRect(tableStartX, currentY, columnWidth, rowHeight), XStringFormats.Center);
+        //        currentY += rowHeight + cellPadding;
+        //    }
+
+        //    // Add city information to the table
+        //    foreach (var supplier in suppliers)
+        //    {
+
+
+
+
+
+        //        currentY += cellPadding;
+        //        gfx.DrawRectangle(XPens.Black, new XRect(tableStartX, currentY, columnWidth, rowHeight));
+        //        gfx.DrawRectangle(XPens.Black, new XRect(tableStartX + columnWidth, currentY, columnWidth, rowHeight));
+        //        gfx.DrawRectangle(XPens.Black, new XRect(tableStartX + 2 * columnWidth, currentY, columnWidth, rowHeight));
+        //        gfx.DrawRectangle(XPens.Black, new XRect(tableStartX + 3 * columnWidth, currentY, columnWidth, rowHeight));
+        //        gfx.DrawRectangle(XPens.Black, new XRect(tableStartX + 4 * columnWidth, currentY, columnWidth, rowHeight));
+
+        //        gfx.DrawString(supplier.SupplierId.ToString(), font, XBrushes.Black, new XRect(tableStartX, currentY, columnWidth, rowHeight), XStringFormats.Center);
+        //        gfx.DrawString(supplier.SupplierName, font, XBrushes.Black, new XRect(tableStartX + columnWidth, currentY, columnWidth, rowHeight), XStringFormats.Center);
+        //        gfx.DrawString(supplier.Email.ToString(), font, XBrushes.Black, new XRect(tableStartX + 2 * columnWidth, currentY, columnWidth, rowHeight), XStringFormats.Center);
+        //        gfx.DrawString(supplier.ContactNo.ToString(), font, XBrushes.Black, new XRect(tableStartX + 3 * columnWidth, currentY, columnWidth, rowHeight), XStringFormats.Center);
+        //        gfx.DrawString(supplier.Address, font, XBrushes.Black, new XRect(tableStartX + 4 * columnWidth, currentY, columnWidth, rowHeight), XStringFormats.Center);
+
+        //        currentY += rowHeight + cellPadding;
+        //    }
+
+        //    // Save the PDF to a MemoryStream
+        //    MemoryStream stream = new MemoryStream();
+        //    document.Save(stream, false);
+        //    stream.Position = 0;
+
+        //    // Return the PDF as a file download
+        //    return File(stream, "application/pdf", "AllSuppliersInfo.pdf");
+        //}
+
+
+        //    [HttpGet("generateallpdf")]
+        //    public async Task<IActionResult> GenerateAllSuppliersPDF()
+        //    {
+        //        var suppliers = await _context.Suppliers.ToListAsync();
+        //        //XSize pageSize = new XSize(800, 800);
+
+
+        //        // Create a new PDF document
+        //        PdfDocument document = new PdfDocument();
+
+        //        //document.Info.Title = "Supplier List Information";
+        //        PdfPage page = document.AddPage();
+        //        XGraphics gfx = XGraphics.FromPdfPage(page);
+        //        XFont font = new XFont("Verdana", 12, XFontStyle.Regular);
+
+        //        //page.Width = pageSize.Width;
+        //        //page.Height = pageSize.Height;
+        //        //XGraphics gfx = XGraphics.FromPdfPage(page);
+        //        //XFont font = new XFont("Verdana", 10, XFontStyle.Regular);
+        //        //XImage logoImage = XImage.FromFile("images/image.png");
+        //        XImage logoImage = XImage.FromFile("images/logo.png");
+
+
+        //        // Define page size and margins
+        //        XUnit pageWidth = page.Width;
+        //        XUnit pageHeight = page.Height;
+        //        XUnit margin = 40;
+        //        XUnit contentWidth = pageWidth - 2 * margin;
+
+        //        // Define table properties
+        //        XUnit tableStartX = margin;
+        //        XUnit tableStartY = 120;
+        //        XUnit cellPadding = 10;
+        //        XUnit columnWidth = contentWidth / 5;
+        //        XUnit rowHeight = 30;
+
+        //        // Define table headers
+        //        List<string> headers = new List<string>
+        //{
+        //    "Sl No",
+        //    "Supplier Name",
+        //    "Email",
+        //    "Contact No",
+        //    "Address"
+        //};
+
+        //        // Create the table and set table properties
+        //        XUnit currentY = tableStartY;
+
+        //        gfx.DrawImage(logoImage, 40, 10, 65, 65); // Adjust the position
+        //        //gfx.DrawString("WelCome To IsDB Library", font, XBrushes.Black, new XRect(10, 10, page.Width, 20), XStringFormats.TopCenter);
+        //        //gfx.DrawString("Publisher Information", font, XBrushes.Black, new XRect(20, 25, page.Width, 20), XStringFormats.TopCenter);
+        //        //gfx.DrawString("Receipt Date:", font, XBrushes.Black, new XRect(30, 40, page.Width, 20), XStringFormats.TopCenter);
+
+        //        // Header Section
+        //        gfx.DrawString("Gadget Point", new XFont("Arial", 20, XFontStyle.Bold), XBrushes.Black,
+        //            new XRect(margin, margin, contentWidth, 10), XStringFormats.Center);
+        //        gfx.DrawString("New Vision Information Technology", new XFont("Arial", 16, XFontStyle.Regular), XBrushes.Black,
+        //            new XRect(margin, margin, contentWidth, 45), XStringFormats.Center);
+        //        gfx.DrawString("Supplier Information", new XFont("Arial", 15, XFontStyle.Regular), XBrushes.Black,
+        //            new XRect(margin, margin, contentWidth, 75), XStringFormats.Center);
+
+        //        // Draw table headers
+        //        for (int i = 0; i < headers.Count; i++)
+        //        {
+        //            gfx.DrawRectangle(XPens.Black, new XRect(tableStartX + i * columnWidth, currentY, columnWidth, rowHeight));
+        //            gfx.DrawString(headers[i], font, XBrushes.Black, new XRect(tableStartX + i * columnWidth, currentY, columnWidth, rowHeight), XStringFormats.Center);
+        //        }
+
+        //        currentY += rowHeight + cellPadding;
+
+        //        // Body Section
+        //        foreach (var supplier in suppliers)
+        //        {
+        //            gfx.DrawRectangle(XPens.Black, new XRect(tableStartX, currentY, columnWidth, rowHeight));
+        //            gfx.DrawString(supplier.SupplierId.ToString(), font, XBrushes.Black, new XRect(tableStartX, currentY, columnWidth, rowHeight), XStringFormats.Center);
+
+        //            gfx.DrawRectangle(XPens.Black, new XRect(tableStartX + columnWidth, currentY, columnWidth, rowHeight));
+        //            gfx.DrawString(supplier.SupplierName, font, XBrushes.Black, new XRect(tableStartX + columnWidth, currentY, columnWidth, rowHeight), XStringFormats.Center);
+
+        //            gfx.DrawRectangle(XPens.Black, new XRect(tableStartX + 2 * columnWidth, currentY, columnWidth, rowHeight));
+        //            gfx.DrawString(supplier.Email.ToString(), font, XBrushes.Black, new XRect(tableStartX + 2 * columnWidth, currentY, columnWidth, rowHeight), XStringFormats.Center);
+
+        //            gfx.DrawRectangle(XPens.Black, new XRect(tableStartX + 3 * columnWidth, currentY, columnWidth, rowHeight));
+        //            gfx.DrawString(supplier.ContactNo.ToString(), font, XBrushes.Black, new XRect(tableStartX + 3 * columnWidth, currentY, columnWidth, rowHeight), XStringFormats.Center);
+
+        //            gfx.DrawRectangle(XPens.Black, new XRect(tableStartX + 4 * columnWidth, currentY, columnWidth, rowHeight));
+        //            gfx.DrawString(supplier.Address, font, XBrushes.Black, new XRect(tableStartX + 4 * columnWidth, currentY, columnWidth, rowHeight), XStringFormats.Center);
+
+        //            currentY += rowHeight + cellPadding;
+        //        }
+
+        //        // Footer Section
+        //        XUnit footerY = pageHeight - margin;
+        //        // gfx.DrawString("Page 1 of 1", font, XBrushes.Black, new XRect(margin, footerY, contentWidth, 18), XStringFormats.Center);
+        //        gfx.DrawString("Page:.....", font, XBrushes.Black, new XRect(10, page.Height - 30, page.Width, 18), XStringFormats.Center);
+        //        string currentDate = DateTime.Now.ToString("yyyy-MM-dd: HH:mm");
+        //        gfx.DrawString("Printed On: " + currentDate, font, XBrushes.Black, new XRect(10, page.Height - 30, page.Width, 18), XStringFormats.TopLeft);
+
+        //        //gfx.DrawString("Reporting Date: ", font, XBrushes.Black, new XRect(10, page.Height - 30, page.Width, 18), XStringFormats.TopLeft);
+        //        //gfx.DrawString("Page 1 of 1", font, XBrushes.Black, new XRect(10, page.Height - 30, page.Width, 20), XStringFormats.TopCenter);
+        //        gfx.DrawString("Powered by:CS/NVIT-M/53/C#", font, XBrushes.Black, new XRect(10, page.Height - 30, page.Width, 15), XStringFormats.TopRight);
+
+
+
+
+        //        // Save the PDF to a MemoryStream
+        //        MemoryStream stream = new MemoryStream();
+        //        document.Save(stream, false);
+        //        stream.Position = 0;
+
+        //        // Return the PDF as a file download
+        //        return File(stream, "application/pdf", "AllSuppliersInfo.pdf");
+        //    }
+
+
+
+        //[HttpGet("generateallpdff")]
+        //public async Task<IActionResult> GenerateAllSuppliersHTMLReport()
+        //{
+        //    var suppliers = await _context.Suppliers.ToListAsync();
+
+        //    // Create an HTML string for the report
+        //    var html = new StringBuilder();
+        //    html.AppendLine("<html>");
+        //    html.AppendLine("<head>");
+        //    html.AppendLine("<style>");
+        //    html.AppendLine("table { border-collapse: collapse; width: 100%; }");
+        //    html.AppendLine("th, td { border: 1px solid black; padding: 8px; text-align: center; }");
+        //    html.AppendLine("</style>");
+        //    html.AppendLine("</head>");
+        //    html.AppendLine("<body>");
+        //    html.AppendLine("<h2>Supplier List Information</h2>");
+        //    html.AppendLine("<table>");
+        //    html.AppendLine("<tr><th>Supplier ID</th><th>Supplier Name</th><th>Email</th><th>Contact No</th><th>Address</th></tr>");
+
+        //    foreach (var supplier in suppliers)
+        //    {
+        //        html.AppendLine("<tr>");
+        //        html.AppendLine($"<td>{supplier.SupplierId}</td>");
+        //        html.AppendLine($"<td>{supplier.SupplierName}</td>");
+        //        html.AppendLine($"<td>{supplier.Email}</td>");
+        //        html.AppendLine($"<td>{supplier.ContactNo}</td>");
+        //        html.AppendLine($"<td>{supplier.Address}</td>");
+        //        html.AppendLine("</tr>");
+        //    }
+
+        //    html.AppendLine("</table>");
+        //    html.AppendLine("</body>");
+        //    html.AppendLine("</html>");
+
+        //    // Return the HTML as ContentResult
+        //    return Content(html.ToString(), "text/html");
+        //}
+
+        //=========================================================
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    //[HttpGet("generateallpdff")]
+        //public async Task<IActionResult> GenerateAllSuppliersPDFReport()
+        //{
+        //    var suppliers = await _context.Suppliers.ToListAsync();
+
+        //    // Create an HTML string for the report
+        //    var html = new StringBuilder();
+        //    html.AppendLine("<html>");
+        //    html.AppendLine("<head>");
+        //    html.AppendLine("<style>");
+        //    html.AppendLine("table { border-collapse: collapse; width: 100%; }");
+        //    html.AppendLine("th, td { border: 1px solid black; padding: 8px; text-align: center; }");
+        //    html.AppendLine("</style>");
+        //    html.AppendLine("</head>");
+        //    html.AppendLine("<body>");
+        //    html.AppendLine("<h2>Supplier List Information</h2>");
+        //    html.AppendLine("<table>");
+        //    html.AppendLine("<tr><th>Supplier ID</th><th>Supplier Name</th><th>Email</th><th>Contact No</th><th>Address</th></tr>");
+
+        //    foreach (var supplier in suppliers)
+        //    {
+        //        html.AppendLine("<tr>");
+        //        html.AppendLine($"<td>{supplier.SupplierId}</td>");
+        //        html.AppendLine($"<td>{supplier.SupplierName}</td>");
+        //        html.AppendLine($"<td>{supplier.Email}</td>");
+        //        html.AppendLine($"<td>{supplier.ContactNo}</td>");
+        //        html.AppendLine($"<td>{supplier.Address}</td>");
+        //        html.AppendLine("</tr>");
+        //    }
+
+        //    html.AppendLine("</table>");
+        //    html.AppendLine("</body>");
+        //    html.AppendLine("</html>");
+
+        //    // Convert HTML to PDF
+        //    var pdfStream = GeneratePdfFromHtml(html.ToString());
+
+        //    // Specify the file name
+        //    string FileName = "SupplierReport.pdf";
+
+        //    // Return the PDF as a file
+        //    return File(pdfStream, "application/pdf", FileName);
+        //}
+
+        //private MemoryStream GeneratePdfFromHtml(string htmlContent)
+        //{
+        //    var pdfDocument = new PdfDocument();
+        //    PdfGenerator.AddPdfPages(pdfDocument, htmlContent, PageSize.A4);
+
+        //    var pdfStream = new MemoryStream();
+        //    pdfDocument.Save(pdfStream, false);
+
+        //    pdfStream.Seek(0, SeekOrigin.Begin);
+        //    return pdfStream;
+        //}
+     //   =================================================================
+
+
+
+
+     
+        //////============================================================
+        //[HttpGet("generateallpdff")]
+        //public async Task<IActionResult> GenerateAllSuppliersHTMLReportt()
+        //{
+
+
+        //    PdfDocument document = new PdfDocument();
+        //    PdfPage page = document.AddPage();
+        //    var suppliers = await _context.Suppliers.ToListAsync();
+
+        //    // Create an HTML string for the report
+        //    var html = new StringBuilder();
+        //    html.AppendLine("<html>");
+        //    html.AppendLine("<head>");
+        //    html.AppendLine("<style>");
+        //    html.AppendLine("@page { size: A4; margin: 2cm 1cm; }"); 
+        // Set the page size to A4 and margins (2cm top and bottom, 1cm left and right)
+        //                                                             //html.AppendLine("body { font-size: 12px; }"); // Set the font size and other styles
+        //                                                             //html.AppendLine("table { border-collapse: collapse; text-align: center;  width: 80%; }");
+        //                                                             //html.AppendLine("th, td { border: 1px solid black; padding: 8px; text-align: center; }");
+
+
+
+        //    html.AppendLine("body { font-size: 12px; }");
+        //    html.AppendLine("table { border-collapse: collapse; width: 70%; margin: 0 auto; text-align: center; }"); // Center the table horizontally
+        //    html.AppendLine("th, td { border: 1px solid black; padding: 8px; text-align: center; }");
+
+
+        //    html.AppendLine(".centered { text-align: center; }"); // Define a CSS class for center alignment
+        //    html.AppendLine(".pagefooter { position: fixed; bottom: 1cm; left: 1cm; right: 1cm; text-align: center; font-size: 10px; color: #555; }"); // Define a CSS class for the footer
+        //    html.AppendLine(".footer { position: fixed; bottom: 1cm; left: 1cm; right: 1cm; text-align: center; font-size: 10px; color: #555; }"); // Define a CSS class for the footer
+        //    html.AppendLine(".Datefooter { position: fixed; bottom: 1cm; left: 1cm; right: 1cm; text-align: center; font-size: 10px; color: #555; }"); // Define a CSS class for the footer
+        //    html.AppendLine("</style>");
+        //    html.AppendLine("</head>");
+        //    html.AppendLine("<body>");
+
+        //    // Center-align the title
+        //    html.AppendLine("<div class='centered'><h1>Gadget Point</h1></div>");
+        //    html.AppendLine("<div class='centered'><h2>New Vision Information Technology</h2></div>");
+        //    html.AppendLine("<div class='centered'><h3>Supplier Information</h3></div>");
+
+        //    html.AppendLine("<table>");
+        //    html.AppendLine("<tr><th>Supplier ID</th><th>Supplier Name</th><th>Email</th><th>Contact No</th><th>Address</th></tr>");
+
+        //    foreach (var supplier in suppliers)
+        //    {
+        //        html.AppendLine("<tr>");
+        //        html.AppendLine($"<td>{supplier.SupplierId}</td>");
+        //        html.AppendLine($"<td>{supplier.SupplierName}</td>");
+        //        html.AppendLine($"<td>{supplier.Email}</td>");
+        //        html.AppendLine($"<td>{supplier.ContactNo}</td>");
+        //        html.AppendLine($"<td>{supplier.Address}</td>");
+        //        html.AppendLine("</tr>");
+        //    }
+
+        //    html.AppendLine("</table>");
+
+
+
+
+
+        //    // Define the CSS class for the footer
+        //    string footerStyle = ".pagefooter { position: fixed; bottom: 1cm; left: 1cm; right: 1cm; text-align: center; font-size: 10px; color: #555; }";
+
+        //    // Initialize page counter
+        //    int currentPage = 1;
+
+        //    // Initialize a StringBuilder to store your HTML content
+        //    //StringBuilder html = new StringBuilder();
+
+        //    // Loop through your rows
+        //    for (int row = 1; row <= 5; row++)
+        //    {
+        //        // Check if it's time to start a new page (e.g., every 20 rows)
+        //        if (row % 5 == 1 && row != 1)
+        //        {
+        //            // You can add code here to create a new page using your preferred PDF library
+        //            // For example, with PdfSharp, you would create a new page with pdfDoc.AddPage()
+
+        //            // Update the footer with the new page number
+        //            html.AppendLine($"<div class='pagefooter'>Page {currentPage}</div>");
+
+        //            currentPage++;
+        //        }
+
+        //        // Add your row content here
+        //        //html.AppendLine("<div>Row content goes here</div>");
+
+
+
+
+
+        //    }
+
+        //    // Add the initial footer for the first page
+        //    //html.AppendLine("<div class='pagefooter'>Page 1</div>");
+
+        //    // Add the CSS styles for the footer
+        //    html.AppendLine("<style>\r\n" + footerStyle + "\r\n</style>\r\n");
+
+        //    // Convert the HTML content to PDF using your preferred library
+        //    // For example, with PdfSharp, you would use:
+        //    // PdfDocument pdfDoc = PdfGenerator.GeneratePdf(html.ToString(), PageSize.A4);
+
+
+
+
+
+
+
+        //    // Add the footer
+        //    html.AppendLine("<div class='pagefooter'>Page 1</div>");
+        //    //html.AppendLine("<div align='right' class='footer'>Powered by:CS/NVIT-M/53/C#</div>");
+        //    string currentDate = DateTime.Now.ToString("dd-MM-yyyy HH:mm"); // Get the current date and time
+        //    html.AppendLine("<div class='Datefooter'>" + currentDate + "</div>");
+
+        //    html.AppendLine("<div class='footer'>Powered by: CS/NVIT-M/53/C#</div>");
+
+
+        //    html.AppendLine("<style>\r\n.Datefooter {\r\n    text-align: left;\r\n}\r\n</style>\r\n");
+
+        //    html.AppendLine("<style>\r\n.pagefooter {\r\n    text-align: center;\r\n}\r\n</style>\r\n");
+
+        //    html.AppendLine("<style>\r\n.footer {\r\n    text-align: right;\r\n}\r\n</style>\r\n");
+
+
+        //    html.AppendLine("</body>");
+        //    html.AppendLine("</html>");
+
+
+        //    PdfGenerator.AddPdfPages(document, currentDate, PageSize.A4);
+
+        //    MemoryStream stream = new MemoryStream();
+        //    document.Save(stream, false);
+        //    stream.Position = 0;
+
+        //    // Return the PDF as a file download
+        //    return File(stream, "application/pdf", "AllPublishers.pdf");
+
+        //    // Return the HTML as ContentResult
+        //    //  return Content(html.ToString(), "text/html");
+
+        //}
+
+        //=====================================================================
+
+        //[HttpGet("FeesStructure")]
+        //public async Task<IActionResult> GeneratePdf(Supplier req)
+        //{
+        //    var data = new PdfDocument();
+        //    string htmlContent = "<div style = 'margin: 20px auto; heigth:1000px; max-width: 600px; padding: 20px; border: 1px solid #ccc; background-color: #FFFFFF; font-family: Arial, sans-serif;' >";
+        //    htmlContent += "<div style = 'margin-bottom: 20px; text-align: center;'>";
+        //    htmlContent += "<img src = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROnYPD5QO8ZJvPQt8ClnJNPXduCeX89dSOxA&usqp=CAU' alt = 'School Logo' style = 'max-width: 100px; margin-bottom: 10px;' >";
+        //    htmlContent += "</div>";
+        //    htmlContent += "<p style = 'margin: 0;' >Jobin School Management</p>";
+        //    htmlContent += "<p style = 'margin: 0;' > 123 School Street, Sample Street</p>";
+        //    htmlContent += "<p style = 'margin: 0;' > Phone: 123 - 456 - 7890 </p>";
+        //    htmlContent += "<p style = 'margin: 0;' > Tamilnadu </p>";
+        //    htmlContent += "<div style = 'text-align: center; margin-bottom: 20px;'>";
+        //    htmlContent += "<h1> Fees Structure </h1>";
+        //    htmlContent += "</div>";
+        //    htmlContent += "<h3> StudentDetails:</h3>";
+        //    htmlContent += "<p> Name:" + req.SupplierId + "</p>";
+        //    htmlContent += "<p> SupplierName:" + req.SupplierName + "</p>";
+        //    htmlContent += "<p> Email:" + req.Email + "</p>";
+        //    htmlContent += "<p> Address:" + req.Address + "</p>";
+        //    htmlContent += "<table style = 'width: 100%; border-collapse: collapse;'>";
+        //    htmlContent += "<thead>";
+        //    htmlContent += "<tr>";
+        //    htmlContent += "<th style = 'padding: 8px; text-align: left; border-bottom: 1px solid #ddd;' > Fee Description </th>";
+        //    htmlContent += "<th style = 'padding: 8px; text-align: left; border-bottom: 1px solid #ddd;' > Amount(INR) </th>";
+        //    htmlContent += "</tr><hr/>";
+        //    htmlContent += "</thead>";
+        //    htmlContent += "<tbody>";
+        //    //decimal totalAmount = 0;
+        //    //if (req.fees != null && req.fees.Count > 0)
+        //    //{
+        //    //    req.fees.ForEach(x =>
+        //    //    {
+        //    //        htmlContent += "<tr>";
+        //    //        htmlContent += "<td style = 'padding: 8px; text-align: left; border-bottom: 1px solid #ddd;' >" + x.FeesDescription + " </td>";
+        //    //        htmlContent += "<td style = 'padding: 8px; text-align: left; border-bottom: 1px solid #ddd;' >Rs " + x.Amount + "/- </td>";
+        //    //        htmlContent += "</tr>";
+        //    //        if (decimal.TryParse(x.Amount, out decimal feeAmount))
+        //    //        {
+        //    //            totalAmount += feeAmount;
+        //    //        }
+        //    //    });
+        //    //    htmlContent += "</tbody>";
+        //    //    htmlContent += "<tfoot>";
+        //    //    htmlContent += "<tr>";
+        //    //    htmlContent += "<td style = 'padding: 8px; text-align: right; font-weight: bold;'> Total:</td>";
+        //    //    htmlContent += "<td style = 'padding: 8px; text-align: left; border-top: 1px solid #ddd;' >Rs" + totalAmount + "/- </td>";
+        //    //    htmlContent += "</tr>";
+        //    //    htmlContent += "</tfoot>";
+        //    //}
+        //    htmlContent += "</table>";
+        //    htmlContent += "</div>";
+        //    PdfGenerator.AddPdfPages(data, htmlContent, pageSize: PdfSharpCore.PageSize.A4);
+        //    byte[]? response = null;
+        //    using (MemoryStream ms = new MemoryStream())
+        //    {
+        //        data.Save(ms);
+        //        response = ms.ToArray();
+        //    }
+        //    string fileName = "FeesStructure" + req.date + ".pdf";
+        //    return File(response, "application/pdf", fileName);
+        //}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

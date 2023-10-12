@@ -1,0 +1,231 @@
+﻿@page "/categories"
+@using CustomerUI.Services;
+@using CustomerUI.Data;
+
+<h3 style="color: #808080; font-weight: bold;">All Categories Information</h3>
+
+<!-- Filtering -->
+<div class="d-flex align-items-center justify-content-between filter-container">
+    <div class="d-flex">
+        <input type="text" @bind="filterText" placeholder="Filter by CategoryName" @oninput="OnFilterTextChanged">
+    </div>
+    <button @onclick="CreateCategory" class="btn btn-primary"><i class="fas fa-plus"></i> Add New Category</button>
+</div>
+<p>Serch Name: @filterText</p>
+<!-- Table with Sorting -->
+<table class="table">
+    <thead>
+        <tr>
+            @* <th @onclick="SortByCategoryId">CategoryId</th> *@
+            <th>Serial No.</th>
+
+            <th @onclick="SortByCategoryName">Category Name</th>
+            <th>Action</th> <!-- Actions column -->
+        </tr>
+    </thead>
+    <tbody>
+        @if (pagedCategories.Any())
+        {
+            @for (int i = 0; i < pagedCategories.Count(); i++)
+            {
+                var category = pagedCategories.ElementAt(i);
+                int serialNumber = (CurPage - 1) * pageSize + i + 1;
+
+                <tr>
+                    <td>@serialNumber</td>
+                    <td>@category.CategoryName</td>
+                    <td>
+                        <button @onclick="() => EditCategory(category.CategoryId)" class="edit-button"><i class="fas fa-edit"></i> Edit</button>
+                        <button @onclick="() => DeleteCategory(category.CategoryId)" class="delete-button"><i class="fas fa-trash"></i>  Delete</button>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="3">No Results Found</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <input type="button" class="btn btn-lg" id="prev" @onclick="PrevPage" value="Previous" />
+    @for (int i = 1; i <= totalPages; i++)
+    {
+        int j = i;
+        @if (i == CurPage)
+        {
+            <span class="px-2" style="font-weight:bold">@i</span>
+        }
+        else
+        {
+            <span class="px-2" cursor="pointer" @onclick="()=> ShowPage(j)">@i</span>
+        }
+    }
+    <input type="button" class="btn btn-lg" id="next" @onclick="NextPage" value="Next" />
+</div>
+
+@code {
+    private int serialOffset = 1;
+
+    private int serialNumber = 1; // Initialize to 1 or any other starting value
+    private int CurPage = 1;
+    private int pageSize = 5; // Adjust the page size as needed
+
+    public string filterText = "";
+    private string sortBy = "CategoryId";
+    private bool sortAscending = true;
+
+    private Category? editCategory;
+    private IEnumerable<Category> CategoriesList = new List<Category>();
+    private IEnumerable<Category> pagedCategories = new List<Category>(); // Track the paged items
+    private int totalPages;
+
+    [Inject]
+    private ICategoryService CategoryService { get; set; }
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        CategoriesList = await CategoryService.GetCategories();
+        await ShowPage();
+    }
+
+    protected async Task ShowPage()
+    {
+        // Apply filtering first
+        var filteredCategoriesList = GetFilteredAndSortedCategories();
+
+        // Calculate the index to start skipping from based on CurPage and pageSize
+        int startIndex = (CurPage - 1) * pageSize;
+
+        // Filter and paginate the CategoriesList
+        pagedCategories = filteredCategoriesList.Skip(startIndex).Take(pageSize).ToList();
+
+        // Calculate total pages based on the filtered list
+        totalPages = (int)Math.Ceiling(filteredCategoriesList.Count() / (double)pageSize);
+    }
+
+    protected async Task NextPage()
+    {
+        if (CurPage < totalPages)
+        {
+            CurPage++;
+            await ShowPage();
+        }
+    }
+
+    protected async Task PrevPage()
+    {
+        if (CurPage > 1)
+        {
+            CurPage--;
+            await ShowPage();
+        }
+    }
+
+    protected async Task ShowPage(int i)
+    {
+        CurPage = i;
+        await ShowPage();
+    }
+
+    private void CreateCategory()
+    {
+        NavigationManager.NavigateTo("/create-category");
+    }
+
+    private async void EditCategory(int categoryId)
+    {
+        NavigationManager.NavigateTo($"/edit-category/{categoryId}");
+
+        try
+        {
+            editCategory = await CategoryService.GetCategoryById(categoryId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading Category: {ex.Message}");
+        }
+    }
+
+    private async Task DeleteCategory(int categoryId)
+    {
+        try
+        {
+            await CategoryService.DeleteCategory(categoryId);
+            CategoriesList = await CategoryService.GetCategories();
+            ShowPage();
+            //ApplyFilter();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting Category: {ex.Message}");
+        }
+    }
+
+    public IEnumerable<Category> GetFilteredAndSortedCategories()
+    {
+        var filteredCategoriesList = CategoriesList;
+
+        // Filter based on CategoryName
+        if (!string.IsNullOrEmpty(filterText))
+        {
+            var searchText = filterText.Trim().ToLower();
+            Console.WriteLine($"Applying filter: {searchText}"); // Add this line for debugging
+            filteredCategoriesList = filteredCategoriesList
+                .Where(category => category.CategoryName.ToLower().Contains(searchText));
+        }
+
+
+
+        // Sort based on the selected column
+        switch (sortBy)
+        {
+            case "CategoryName":
+                filteredCategoriesList = sortAscending
+                    ? filteredCategoriesList.OrderBy(category => category.CategoryName)
+                    : filteredCategoriesList.OrderByDescending(category => category.CategoryName);
+                break;
+            // Add more cases for other columns if needed
+
+            default:
+                filteredCategoriesList = sortAscending
+                    ? filteredCategoriesList.OrderBy(category => category.CategoryId)
+                    : filteredCategoriesList.OrderByDescending(category => category.CategoryId);
+                break;
+        }
+
+        return filteredCategoriesList;
+    }
+
+    //private void SortByCategoryId() => SetSortCriteria("CategoryId");
+    //private void SortByCategoryName() => SetSortCriteria("CategoryName");
+
+
+    private void SortByCategoryName()
+    {
+        SetSortCriteria("CategoryName");
+        ShowPage();
+    }
+
+
+    private void SetSortCriteria(string column)
+    {
+        if (sortBy == column)
+            sortAscending = !sortAscending;
+        else
+            sortAscending = true;
+
+        sortBy = column;
+    }
+
+    public void OnFilterTextChanged(ChangeEventArgs e)
+    {
+        filterText = e.Value.ToString();
+        ShowPage();
+    }
+}

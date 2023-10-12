@@ -1,0 +1,228 @@
+﻿@page "/brands"
+@using CustomerUI.Services;
+@using CustomerUI.Data;
+
+<h3 style="color: #808080; font-weight: bold;">All Brands Information</h3>
+
+
+<!-- Filtering -->
+
+<div class="d-flex align-items-center justify-content-between filter-container">
+    <div class="d-flex">
+       @* <input type="text" @bind="filterText" placeholder="Filter by BrandName" class="filter-input" />
+        <button @onclick="ApplyFilter" class="filter-button">Search</button>*@
+       
+        <input type="text" @bind="filterText" placeholder="Filter by BrandName" @oninput="OnFilterTextChanged">
+    </div>
+    <button @onclick="CreateBrand" class="btn btn-primary"><i class="fas fa-plus"></i> Add New Brands</button>
+</div>
+<p>Serch Name: @filterText</p>
+
+<!-- Table with Sorting -->
+<table class="table">
+    <thead>
+        <tr>
+            <th>Serial No.</th>
+            <th @onclick="SortByBrandName">Brand Name</th>
+            <th>Action</th> <!-- Actions column -->
+        </tr>
+    </thead>
+    <tbody>
+        @if (pagedBrands.Any())
+        {
+            @for (int i = 0; i < pagedBrands.Count(); i++)
+            {
+                var brand = pagedBrands.ElementAt(i);
+                int serialNumber = (CurPage - 1) * pageSize + i + 1;
+
+                <tr>
+                    <td>@serialNumber</td>
+                    <td>@brand.BrandName</td>
+                    <td>
+                        <button @onclick="() => EditBrand(brand.BrandId)" class="edit-button"><i class="fas fa-edit"></i> Edit</button>
+                        <button @onclick="() => DeleteBrand(brand.BrandId)" class="delete-button"><i class="fas fa-trash"></i>  Delete</button>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="3">No Results Found</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div>
+    <input type="button" class="btn btn-lg" id="prev" @onclick="PrevPage" value="Previous" />
+    @for (int i = 1; i <= totalPages; i++)
+    {
+        int j = i;
+        @if (i == CurPage)
+        {
+            <span class="px-2" style="font-weight:bold">@i</span>
+        }
+        else
+        {
+            <span class="px-2" cursor="pointer" @onclick="()=> ShowPage(j)">@i</span>
+        }
+    }
+    <input type="button" class="btn btn-lg" id="next" @onclick="NextPage" value="Next" />
+</div>
+
+@code {
+    private int serialOffset = 1;
+    private int serialNumber = 1; // Initialize to 1 or any other starting value
+
+    private int CurPage = 1;
+    private int pageSize = 5; // Adjust the page size as needed
+
+    public string filterText = "";
+    private string sortBy = "BrandId";
+    private bool sortAscending = true;
+
+    private Brand? editBrand;
+    private IEnumerable<Brand> BrandsList = new List<Brand>();
+    private IEnumerable<Brand> pagedBrands = new List<Brand>(); // Track the paged items
+    private int totalPages;
+
+    [Inject]
+    private IBrandService BrandService { get; set; }
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        BrandsList = await BrandService.GetBrands();
+        await ShowPage();
+    }
+
+    protected async Task ShowPage()
+    {
+        // Apply filtering first
+        var filteredBrandsList = GetFilteredAndSortedBrands();
+
+        // Calculate the index to start skipping from based on CurPage and pageSize
+        int startIndex = (CurPage - 1) * pageSize;
+
+        // Filter and paginate the BrandsList
+        pagedBrands = filteredBrandsList.Skip(startIndex).Take(pageSize).ToList();
+
+        // Calculate total pages based on the filtered list
+        totalPages = (int)Math.Ceiling(filteredBrandsList.Count() / (double)pageSize);
+    }
+
+    protected async Task NextPage()
+    {
+        if (CurPage < totalPages)
+        {
+            CurPage++;
+            await ShowPage();
+        }
+    }
+
+    protected async Task PrevPage()
+    {
+        if (CurPage > 1)
+        {
+            CurPage--;
+            await ShowPage();
+        }
+    }
+
+    protected async Task ShowPage(int i)
+    {
+        CurPage = i;
+        await ShowPage();
+    }
+
+    private void CreateBrand()
+    {
+        NavigationManager.NavigateTo("/create-brand");
+    }
+
+    private async void EditBrand(int brandId)
+    {
+        NavigationManager.NavigateTo($"/edit-brand/{brandId}");
+
+        try
+        {
+            editBrand = await BrandService.GetBrandById(brandId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading Brand: {ex.Message}");
+        }
+    }
+
+    private async Task DeleteBrand(int brandId)
+    {
+        try
+        {
+            await BrandService.DeleteBrand(brandId);
+            BrandsList = await BrandService.GetBrands();
+            await ShowPage();
+            //ApplyFilter(); // Reapply the filter after deletion
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting brand: {ex.Message}");
+        }
+    }
+
+    //filtering
+
+    public IEnumerable<Brand> GetFilteredAndSortedBrands()
+    {
+        var filteredBrandsList = BrandsList;
+
+        // Filter based on BrandName
+        if (!string.IsNullOrEmpty(filterText))
+        {
+            var searchText = filterText.Trim().ToLower();
+            Console.WriteLine($"Applying filter: {searchText}"); // Add this line for debugging
+            filteredBrandsList = filteredBrandsList
+                .Where(brand => brand.BrandName.ToLower().Contains(searchText));
+        }
+
+        // Sort based on the selected column
+        switch (sortBy)
+        {
+            case "BrandName":
+                filteredBrandsList = sortAscending
+                    ? filteredBrandsList.OrderBy(brand => brand.BrandName)
+                    : filteredBrandsList.OrderByDescending(brand => brand.BrandName);
+                break;
+
+                // Add more cases for other columns if needed
+        }
+
+        return filteredBrandsList;
+    }
+
+    //soritng
+
+    private void SortByBrandName()
+    {
+        SetSortCriteria("BrandName");
+        ShowPage();
+    }
+
+    private void SetSortCriteria(string column)
+    {
+        if (sortBy == column)
+            sortAscending = !sortAscending;
+        else
+            sortAscending = true;
+
+        sortBy = column;
+    }
+
+    public void OnFilterTextChanged(ChangeEventArgs e)
+    {
+        filterText = e.Value.ToString();
+        ShowPage(); // Apply filtering and pagination
+    }
+
+}

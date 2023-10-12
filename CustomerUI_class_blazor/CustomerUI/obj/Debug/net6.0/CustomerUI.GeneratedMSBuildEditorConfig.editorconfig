@@ -1,0 +1,137 @@
+is_global = true
+build_property.TargetFramework = net6.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = CustomerUI
+build_property.RootNamespace = CustomerUI
+build_property.ProjectDir = G:\Report\CustomerUI_class_log_pro\CustomerUI\
+build_property.RazorLangVersion = 6.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = G:\Report\CustomerUI_class_log_pro\CustomerUI
+build_property._RazorSourceGeneratorDebug = 
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/App.razor]
+build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/Pages/Brand/CreateBrand.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQnJhbmRcQ3JlYXRlQnJhbmQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/Pages/Brand/EditBrand.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQnJhbmRcRWRpdEJyYW5kLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/Pages/Category/CreateCategory.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2F0ZWdvcnlcQ3JlYXRlQ2F0ZWdvcnkucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/Pages/Category/EditCategory.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2F0ZWdvcnlcRWRpdENhdGVnb3J5LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/Pages/Counter.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ291bnRlci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/Pages/FetchData.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRmV0Y2hEYXRhLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/Pages/Index.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXgucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/Pages/Product/ConfirmDeleteModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvZHVjdFxDb25maXJtRGVsZXRlTW9kYWwucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/Pages/Product/CreateProduct.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvZHVjdFxDcmVhdGVQcm9kdWN0LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/Pages/Product/EditProduct.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvZHVjdFxFZGl0UHJvZHVjdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/Pages/SubCategory/CreateSubCategory.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU3ViQ2F0ZWdvcnlcQ3JlYXRlU3ViQ2F0ZWdvcnkucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/Pages/SubCategory/EditSubCategory.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU3ViQ2F0ZWdvcnlcRWRpdFN1YkNhdGVnb3J5LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/Pages/Supplier/CreateSupplier.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU3VwcGxpZXJcQ3JlYXRlU3VwcGxpZXIucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/Pages/Supplier/EditSupplier.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU3VwcGxpZXJcRWRpdFN1cHBsaWVyLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/Pages/Supplier/FetchSupplier.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU3VwcGxpZXJcRmV0Y2hTdXBwbGllci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/Pages/User/Login.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVXNlclxMb2dpbi5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/Pages/User/Register.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVXNlclxSZWdpc3Rlci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/Shared/SurveyPrompt.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXFN1cnZleVByb21wdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/Pages/Brand/BrandList.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQnJhbmRcQnJhbmRMaXN0LnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-9t1odg5eql
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/Pages/Category/CategoryList.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2F0ZWdvcnlcQ2F0ZWdvcnlMaXN0LnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-ummskuwqss
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/Pages/Product/ProductList.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvZHVjdFxQcm9kdWN0TGlzdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-p37qtelxgk
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/Pages/SubCategory/SubCategoryList.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU3ViQ2F0ZWdvcnlcU3ViQ2F0ZWdvcnlMaXN0LnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-42va65f87o
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/Pages/Supplier/SupplierList.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU3VwcGxpZXJcU3VwcGxpZXJMaXN0LnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-6dk3io1bsk
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/Shared/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE1haW5MYXlvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-n9xubr7w7o
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/Shared/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE5hdk1lbnUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-xp8du98xcy
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/Pages/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXJyb3IuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/Pages/_Host.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0hvc3QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[G:/Report/CustomerUI_class_log_pro/CustomerUI/Pages/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0xheW91dC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 

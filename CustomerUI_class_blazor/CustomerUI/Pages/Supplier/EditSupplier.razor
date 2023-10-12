@@ -1,0 +1,60 @@
+﻿@page "/edit-supplier/{Id}"
+@using CustomerUI.Services;
+@using CustomerUI.Data;
+
+<h3>Edit Supplier</h3>
+
+<!-- Brand editing form -->
+<form @onsubmit="UpdateSupplier">
+    <div class="form-group">
+        <label for="supplierName">Supplier Name:</label>
+        <input type="text" class="form-control" id="supplierName" @bind="editedSupplier.SupplierName">
+    </div>
+    <div class="form-group">
+        <label for="supplierEmail">Email:</label>
+        <input type="text" class="form-control" id="supplierEmail" @bind="editedSupplier.Email">
+    </div> <div class="form-group">
+        <label for="supplierContactNo">Contact No:</label>
+        <input type="text" class="form-control" id="supplierContactNo" @bind="editedSupplier.ContactNo">
+    </div> <div class="form-group">
+        <label for="supplierAddress">Address:</label>
+        <input type="text" class="form-control" id="supplierAddress" @bind="editedSupplier.Address">
+    </div>
+    <br/>
+    <button type="submit" class="btn btn-primary" >Update</button>
+</form>
+
+@code {
+
+    [Parameter]
+    public string id { get; set; }
+
+    private Supplier editedSupplier = new Supplier();
+
+    [Inject]
+    private ISupplierService SupplierService { get; set; }
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (int.TryParse(id, out int Id))
+        {
+            editedSupplier = await SupplierService.GetSupplierById(Id);
+
+        }
+    }
+
+    private async Task UpdateSupplier()
+    {
+        try
+        {
+            await SupplierService.UpdateSupplier(editedSupplier);
+            NavigationManager.NavigateTo("/suppliers");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error updating Supplier: {ex.Message}");
+        }
+    }
+}
